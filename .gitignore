@@ -3,3 +3,10 @@
 
 #VSCODE
 .vscode/*
+
+#PYTHON
+.Python
+lib/*
+bin/*
+include/*
+bin/activate
