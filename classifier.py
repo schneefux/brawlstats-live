@@ -7,6 +7,17 @@ import cv2
 import time
 import glob
 
+class Template(object):
+    def __init__(self, path, scaling_factor):
+        self.label = os.path.basename(os.path.splitext(path)[0])
+        image = self.source_image = cv2.imread(path)
+        image = cv2.resize(image, None,
+                           fx=scaling_factor, fy=scaling_factor)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        self.threshold, self.mask = cv2.threshold(
+            image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+
 class Classifier(object):
     # scale 16:9 (Twitch de facto standard) to
     # * 16:9 phone (runickk)
@@ -17,30 +28,15 @@ class Classifier(object):
 
     def __init__(self, stream_resolution):
         self.stream_resolution = stream_resolution
-
-        # assumes that the streamer's scaling never changes
-        # and that the same factor works for all
-        # if it works for one (which might not be true…)
-        self.scale_factor_cache = dict()
-        self.templates = dict()
-        self.template_threshold = dict()
+        self.scale_factor = None
+        self.templates = []
 
     def load_templates(self, template_glob, template_resolution):
-        # all should be taken from the exact same scale!
         for path in glob.glob(template_glob):
-            template = cv2.imread(path)
-            # 480p stream / 1080p phone
             factor = float(self.stream_resolution) / template_resolution
-            template = cv2.resize(template, None,
-                                  fx=factor, fy=factor)
-            template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-            threshold, template = cv2.threshold(
-                template, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-            name = os.path.basename(os.path.splitext(path)[0])
-            self.templates[name] = template
-            self.template_threshold[name] = threshold
+            self.templates.append(Template(path, factor))
 
-    def classify_image(self, frame, cache_key=""):
+    def classify_image(self, frame):
         '''
         Given a frame, return the name of the first matching template
         or None.
@@ -48,16 +44,15 @@ class Classifier(object):
         # https://www.docs.opencv.org/trunk/d4/dc6/tutorial_py_template_matching.html
         benchmark = time.time()
 
-        found_perfect_factor = cache_key in self.scale_factor_cache
-        need_perfect_factor = not found_perfect_factor
-        if found_perfect_factor:
-            factors = [self.scale_factor_cache[cache_key]]
+        need_perfect_factor = self.scale_factor is None
+        matching_template = None
+        if not need_perfect_factor:
+            factors = [self.scale_factor]
         else:
             # try a range of factors until a template matches
             factors = self.all_scaling_factors
             perfect_factor = 1.0
             perfect_factor_confidence = 0.0
-            perfect_factor_template_name = ""
 
         # prerender resized images
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -65,40 +60,38 @@ class Classifier(object):
             scaled_frame = cv2.resize(gray_frame, None,
                                       fx=factor, fy=factor)
 
-            # try all templates
-            for template_name, template in self.templates.items():
-                if template.shape[0] > scaled_frame.shape[0] or \
-                        template.shape[1] > scaled_frame.shape[1]:
-                    # too large anyways
+            for template in self.templates:
+                if template.mask.shape[0] > scaled_frame.shape[0] or \
+                        template.mask.shape[1] > scaled_frame.shape[1]:
                     continue
 
                 black_frame = cv2.threshold(
                     scaled_frame,
-                    self.template_threshold[template_name],
+                    template.threshold,
                     255,
                     cv2.THRESH_BINARY)[1]
                 matches = cv2.matchTemplate(black_frame,
-                                            template, cv2.TM_CCOEFF_NORMED)
+                                            template.mask,
+                                            cv2.TM_CCOEFF_NORMED)
                 confidence = matches.max()
                 if confidence >= self.min_match_confidence:
                     if need_perfect_factor:
                         if confidence > perfect_factor_confidence:
-                            found_perfect_factor = True
+                            matching_template = template
                             perfect_factor = factor
                             perfect_factor_confidence = confidence
-                            perfect_factor_template_name = template_name
                     else:
                         # early break
                         print("matched template in {}s with confidence {}"
                               .format(time.time() - benchmark,
                                       confidence))
-                        return template_name
+                        return template.label
 
-        if need_perfect_factor and found_perfect_factor:
-            self.scale_factor_cache[cache_key] = perfect_factor
+        if need_perfect_factor and matching_template is not None:
+            self.scale_factor = perfect_factor
             print("found perfect factor {} with confidence {}"
                   .format(perfect_factor, perfect_factor_confidence))
-            return perfect_factor_template_name
+            return matching_template.label
 
         print("matched no templates in {}s"
               .format(time.time() - benchmark))
