@@ -57,7 +57,7 @@ def classify_image(frame, cache_key=""):
     # prerender resized images 
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     for factor in factors:
-	scaled_frame = cv2.resize(gray_frame, None,
+    scaled_frame = cv2.resize(gray_frame, None,
                                   fx=factor, fy=factor)
 
         # try all templates
