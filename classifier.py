@@ -7,6 +7,8 @@ import cv2
 import time
 import glob
 
+RESOLUTION = 480
+
 # target is 16:9
 # scale to
 # * 16:9 phone (runickk)
@@ -22,7 +24,7 @@ template_threshold = dict()
 for path in glob.glob("templates/*.png"):
     template = cv2.imread(path)
     # 480p stream / 1080p phone
-    resolution_factor = 480.0 / 1080.0
+    resolution_factor = RESOLUTION / 1080.0
     template = cv2.resize(template, None,
                           fx=resolution_factor, fy=resolution_factor)
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
