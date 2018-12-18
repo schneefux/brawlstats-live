@@ -2,63 +2,67 @@
 # based on https://gist.github.com/kscottz/242176c5bdb282b0a327
 # using streamlink instead of livestreamer https://streamlink.github.io/api_guide.html
 
-import os
-import io
 import cv2
 import time
-import glob
 import streamlink
-import numpy as np
+import classifier
 
-CHANNEL = "ohryantv"
+CHANNEL = "backstabx_15"
 BUFFER = "/tmp/" + CHANNEL + ".mpg"
 
 # get Twitch stream
 streams = streamlink.streams("https://www.twitch.tv/" + CHANNEL)
 
-# buffer first frame to file
-print("Buffering")
-stream = streams["480p"].open() # ['audio_only', '160p', '360p', '480p', '720p', 'worst', 'best']
+# should be same as template resolution!
+stream = streams["480p"].open()
+# common options: audio_only, 160p, 360p, 480p, 720p, worst, best
 buffer = open(BUFFER, "wb")
-buffer.write(stream.read(854*480*3))
+print("buffering")
+buffer.write(stream.read(-1))
 
-# open templates and stream
+def get_last_frame():
+    '''
+    Skip all frames from the stream and return the last.
+    '''
+    # TODO this is quite an ugly workaround
+    # might want to try this instead https://github.com/DanielTea/rage-analytics/blob/8e20121794478bda043df4d903aa8709f3ac79fc/engine/realtime_VideoStreamer.py
+    last_frame = None
+    while True:
+        # stream buffer -> file buffer
+        buffer.write(stream.read(-1))
+        while True:
+            # empty file buffer until no data
+            _, frame = cap.read()
+            if frame is None:
+                # TODO suppress errors on console
+                break
+            last_frame = frame
+        if last_frame is not None:
+            return last_frame
+        print("buffering")
+
+
 cap = cv2.VideoCapture(BUFFER)
-templates = dict()
-for fp in glob.glob("templates/*.png"):
-    template = cv2.imread(fp)
-    template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-    name = os.path.basename(os.path.splitext(fp)[0])
-    templates[name] = template
-print("loaded templates {}".format(templates.keys()))
 
 while True:
-    for _ in range(10):
-        ret, frame = cap.read()
-
-    # https://www.docs.opencv.org/trunk/d4/dc6/tutorial_py_template_matching.html
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    threshold = 0.9
-    # assumes that the dimension of the template source image and the comparison image are equal!
-    for template_name, template in templates.items():
-        match = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
-        location = np.where(match >= threshold)
-        for pt in zip(*location[::-1]):
-            print("found a match for template {}".format(template_name))
-            template_w, template_h = template.shape[::-1]
-            cv2.rectangle(frame, pt, (pt[0] + template_w, pt[1] + template_h), (0, 0, 255), 2)
-
+    frame = get_last_frame()
     cv2.imshow("frame", frame)
 
+    matching_template_name = classifier.classify_image(frame, CHANNEL)
+    if matching_template_name is not None:
+        print(matching_template_name)
+
     # release and check for ESC
-    if (0xFF & cv2.waitKey(1) == 27) or frame.size == 0:
-        # write possible template file
+    key = 0xFF & cv2.waitKey(5)
+    if key == 27:
+        # ESC: quit
+        break
+    if key == 32:
+        # space: screenshot
         filename = CHANNEL + "_" + str(int(time.time())) + ".png"
         cv2.imwrite(filename, frame)
-        break
-
-    buffer.write(stream.read(-1))
 
 buffer.close()
 stream.close()
 cv2.destroyAllWindows()
+os.remove(BUFFER)
