@@ -51,10 +51,11 @@ while True:
 
     matching_template_name = classifier.classify_image(frame, CHANNEL)
     if matching_template_name is not None:
-        print(matching_template_name)
+        print("current frame shows {}!"
+              .format(matching_template_name))
 
     # release and check for ESC
-    key = 0xFF & cv2.waitKey(5)
+    key = 0xFF & cv2.waitKey(1)
     if key == 27:
         # ESC: quit
         break
