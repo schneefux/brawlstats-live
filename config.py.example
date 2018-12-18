@@ -1,1 +1,3 @@
 client_id = "https://glass.twitch.tv/console/apps"
+stream_resolution = 480 # common 160, 360, 480, 720, 1080
+template_resolution = 1080

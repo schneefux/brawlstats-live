@@ -7,14 +7,12 @@ import cv2
 import time
 import requests
 import streamlink
-import classifier
+from classifier import Classifier
 import config
 
-RESOLUTION = 480
 TWITCH_HEADERS = { "Client-ID": config.client_id }
 
-RESOLUTION_P = "{}p".format(RESOLUTION)
-# common options: audio_only, 160p, 360p, 480p, 720p, worst, best
+stream_resolution_p = "{}p".format(config.stream_resolution)
 
 #r = requests.get("https://api.twitch.tv/helix/games?name=Brawl+Stars",
 #                 headers=TWITCH_HEADERS)
@@ -30,13 +28,13 @@ for channel_data in r.json()["data"]:
 
     # get Twitch stream
     streams = streamlink.streams("https://www.twitch.tv/" + channel)
-    if RESOLUTION_P not in streams:
+    if stream_resolution_p not in streams:
         # try next
         continue
 
     print("watching {}'s stream".format(channel))
     # should be same as template resolution!
-    stream = streams[RESOLUTION_P].open()
+    stream = streams[stream_resolution_p].open()
     break
 
 buffer = open(buffer_file, "wb")
@@ -66,6 +64,9 @@ def get_last_frame():
 
 
 cap = cv2.VideoCapture(buffer_file)
+classifier = Classifier(config.stream_resolution)
+classifier.load_templates("templates/*.png",
+                          config.template_resolution)
 
 while True:
     frame = get_last_frame()
