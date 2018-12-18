@@ -3,14 +3,17 @@
 # based on https://gist.github.com/kscottz/242176c5bdb282b0a327
 
 import os
-import numpy as np
 import cv2
 import time
 import glob
 
-# streamers scale their streams a bit
-ALL_SCALING_FACTORS = np.linspace(0.90, 1.30, 10)
-MIN_MATCH_CONFIDENCE = 0.80
+# target is 16:9
+# scale to
+# * 16:9 phone (runickk)
+# * 21:9 phone (landi)
+# * 3:4 phone (backstabx)
+ALL_SCALING_FACTORS = [1.0, 1.24, 1.35]
+MIN_MATCH_CONFIDENCE = 0.70
 
 # load templates
 # all should be taken from the exact same scale!

@@ -2,12 +2,13 @@
 # based on https://gist.github.com/kscottz/242176c5bdb282b0a327
 # using streamlink instead of livestreamer https://streamlink.github.io/api_guide.html
 
+import os
 import cv2
 import time
 import streamlink
 import classifier
 
-CHANNEL = "backstabx_15"
+CHANNEL = "runickk"
 BUFFER = "/tmp/" + CHANNEL + ".mpg"
 
 # get Twitch stream
@@ -50,10 +51,11 @@ while True:
 
     matching_template_name = classifier.classify_image(frame, CHANNEL)
     if matching_template_name is not None:
-        print(matching_template_name)
+        print("current frame shows {}!"
+              .format(matching_template_name))
 
     # release and check for ESC
-    key = 0xFF & cv2.waitKey(5)
+    key = 0xFF & cv2.waitKey(1)
     if key == 27:
         # ESC: quit
         break
