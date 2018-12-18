@@ -113,3 +113,16 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+=======
+#MAC
+.DS_Store
+
+#VSCODE
+.vscode/*
+
+#PYTHON
+.Python
+lib/*
+bin/*
+include/*
+bin/activate
