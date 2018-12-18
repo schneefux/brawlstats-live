@@ -9,8 +9,8 @@ import time
 import glob
 
 # target is 16:9
-# scale to 21:9 phone, 3:4 phone
-ALL_SCALING_FACTORS = [1.235, 1.333]
+# scale to 16:9 phone, 21:9 phone, 3:4 phone
+ALL_SCALING_FACTORS = [1.0, 1.235, 1.333]
 MIN_MATCH_CONFIDENCE = 0.70
 
 # load templates
