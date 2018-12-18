@@ -5,19 +5,41 @@
 import os
 import cv2
 import time
+import requests
 import streamlink
 import classifier
+import config
 
-CHANNEL = "runickk"
-BUFFER = "/tmp/" + CHANNEL + ".mpg"
+RESOLUTION = 480
+TWITCH_HEADERS = { "Client-ID": config.client_id }
 
-# get Twitch stream
-streams = streamlink.streams("https://www.twitch.tv/" + CHANNEL)
-
-# should be same as template resolution!
-stream = streams["480p"].open()
+RESOLUTION_P = "{}p".format(RESOLUTION)
 # common options: audio_only, 160p, 360p, 480p, 720p, worst, best
-buffer = open(BUFFER, "wb")
+
+#r = requests.get("https://api.twitch.tv/helix/games?name=Brawl+Stars",
+#                 headers=TWITCH_HEADERS)
+#twitch_game_id = r.json()["data"][0]["id"]
+twitch_game_id = "497497" # Brawl Stars
+
+r = requests.get("https://api.twitch.tv/helix/streams" +
+                 "?first=10&language=en&game_id=" + twitch_game_id,
+                 headers=TWITCH_HEADERS)
+for channel_data in r.json()["data"]:
+    channel = channel_data["user_name"]
+    buffer_file = "/tmp/" + channel + ".mpg"
+
+    # get Twitch stream
+    streams = streamlink.streams("https://www.twitch.tv/" + channel)
+    if RESOLUTION_P not in streams:
+        # try next
+        continue
+
+    print("watching {}'s stream".format(channel))
+    # should be same as template resolution!
+    stream = streams[RESOLUTION_P].open()
+    break
+
+buffer = open(buffer_file, "wb")
 print("buffering")
 buffer.write(stream.read(-1))
 
@@ -43,13 +65,13 @@ def get_last_frame():
         print("buffering")
 
 
-cap = cv2.VideoCapture(BUFFER)
+cap = cv2.VideoCapture(buffer_file)
 
 while True:
     frame = get_last_frame()
     cv2.imshow("frame", frame)
 
-    matching_template_name = classifier.classify_image(frame, CHANNEL)
+    matching_template_name = classifier.classify_image(frame, channel)
     if matching_template_name is not None:
         print("current frame shows {}!"
               .format(matching_template_name))
@@ -61,10 +83,10 @@ while True:
         break
     if key == 32:
         # space: screenshot
-        filename = CHANNEL + "_" + str(int(time.time())) + ".png"
+        filename = channel + "_" + str(int(time.time())) + ".png"
         cv2.imwrite(filename, frame)
 
 buffer.close()
 stream.close()
 cv2.destroyAllWindows()
-os.remove(BUFFER)
+os.remove(buffer_file)
