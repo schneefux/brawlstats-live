@@ -8,7 +8,7 @@ import time
 import streamlink
 import classifier
 
-CHANNEL = "backstabx_15"
+CHANNEL = "runickk"
 BUFFER = "/tmp/" + CHANNEL + ".mpg"
 
 # get Twitch stream
