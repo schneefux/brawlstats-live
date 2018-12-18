@@ -3,7 +3,6 @@
 # based on https://gist.github.com/kscottz/242176c5bdb282b0a327
 
 import os
-import numpy as np
 import cv2
 import time
 import glob
