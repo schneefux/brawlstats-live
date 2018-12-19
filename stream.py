@@ -11,12 +11,6 @@ class StreamSource(object):
 
 
 class TwitchStream(StreamSource):
-    channel = ""
-    _twitch_headers = None
-    _http_stream    = None
-    _file_stream    = None
-    _stream         = None
-
     def __init__(self, stream_resolution, twitch_client_id):
         # TODO close streams later
         self._twitch_headers = { "Client-ID": twitch_client_id }
