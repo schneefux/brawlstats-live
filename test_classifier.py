@@ -5,14 +5,15 @@ import glob
 import config
 from classifier import Classifier
 
-screen_classifier = Classifier(config.stream_resolution)
-post_match_classifier = Classifier(config.stream_resolution)
-screen_classifier.load_templates(
-    "templates/screens/*.png", config.template_resolution)
-post_match_classifier.load_templates(
-    "templates/post_match/*.png", config.template_resolution)
+TEMPLATES = ["screen", "post_match"]
 
-def load_test_images(*folders):
+classifier = dict()
+for name in TEMPLATES:
+    classifier[name] = Classifier(config.stream_resolution)
+    classifier[name].load_templates(
+        "templates/{}/*.png".format(name), config.template_resolution)
+
+def images(*folders):
     for folder in folders:
         for path in glob.glob("{}/*.png".format(folder)):
             frame = cv2.imread(path)
@@ -20,18 +21,18 @@ def load_test_images(*folders):
 
 
 def test_screen_post_match():
-    for frame in load_test_images("victory", "defeat"):
-        assert screen_classifier.classify_image(frame) == "post_match"
+    for frame in images("victory", "defeat"):
+        assert classifier["screen"].classify_image(frame) == "post_match"
 
 def test_victory():
-    for frame in load_test_images("victory"):
-        assert post_match_classifier.classify_image(frame) == "victory"
+    for frame in images("victory"):
+        assert classifier["post_match"].classify_image(frame) == "victory"
 
 def test_defeat():
-    for frame in load_test_images("defeat"):
-        assert post_match_classifier.classify_image(frame) == "defeat"
+    for frame in images("defeat"):
+        assert classifier["post_match"].classify_image(frame) == "defeat"
 
 def test_unclassified():
-    for frame in load_test_images("unclassified"):
-        assert screen_classifier.classify_image(frame) == None
-        assert post_match_classifier.classify_image(frame) == None
+    for frame in images("unclassified"):
+        assert classifier["screen"].classify_image(frame) == None
+        assert classifier["post_match"].classify_image(frame) == None
