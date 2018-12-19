@@ -1,8 +1,9 @@
-import numpy as np
+import json
 import random
 import requests
 import streamlink
 import subprocess
+import numpy as np
 from threading import Thread
 
 class StreamSource(object):
@@ -16,8 +17,7 @@ class TwitchStream(StreamSource):
         self._twitch_headers = { "Client-ID": twitch_client_id }
         self.channel, stream = self._get_random_channel(
             stream_resolution)
-        self._stream = VideoStreamer(stream,
-                                     "{}p".format(stream_resolution))
+        self._stream = VideoStreamer(stream)
 
     def _get_game_id(self):
         #r = requests.get("https://api.twitch.tv/helix/games?name=Brawl+Stars",
@@ -52,21 +52,29 @@ class VideoStreamer:
     '''
     Buffer a stream using ffmpeg, yielding every nth frame.
     '''
-    def __init__(self, stream, resolution):
+    def __init__(self, stream):
         self._frame = None
-        self._create_pipe(stream, resolution)
+        self._create_pipe(stream)
         self._start_buffer()
 
-    def _create_pipe(self, stream, resolution):
-        resolutions = {
-            "360p": [640, 360],
-            "480p": [852, 480],
-            "720p": [1280, 720],
-            "1080p": [1920, 1080]
-        }
+    def _create_pipe(self, stream):
+        probe_pipe = subprocess.Popen([
+            "ffprobe", stream.url,
+                       "-v", "error",
+                       "-show_entries", "stream=width,height",
+                       "-of", "json"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE)
+        video_info = probe_pipe.stdout.read().decode("utf8")
+        video_info = json.loads(video_info)["streams"]
+        video_info = next(
+            data for data in video_info
+            if len(data.keys()) > 0
+        )
 
-        self._byte_length = resolutions[resolution][0]
-        self._byte_width = resolutions[resolution][1]
+        self._byte_length = video_info["width"]
+        self._byte_width  = video_info["height"]
+
         self._pipe = subprocess.Popen([
             "ffmpeg", "-i", stream.url,
                       "-loglevel", "quiet", # no text output
@@ -77,19 +85,22 @@ class VideoStreamer:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
 
+        self._frame = self._read_frame()
+
     def _start_buffer(self):
         t = Thread(target=self._update_buffer_forever, args=())
         t.daemon = True
         t.start()
 
+    def _read_frame(self):
+        raw_image = self._pipe.stdout.read(
+            self._byte_length * self._byte_width * 3)
+        return np.fromstring(raw_image, dtype="uint8")\
+            .reshape((self._byte_width, self._byte_length, 3))
+
     def _update_buffer_forever(self):
         while True:
-            raw_image = self._pipe.stdout.read(
-                self._byte_length * self._byte_width * 3)
-            self._frame = np.fromstring(raw_image, dtype="uint8")\
-                .reshape((self._byte_width, self._byte_length, 3))
+            self._frame = self._read_frame()
 
     def read(self):
-        while self._frame is None:
-            pass
         return self._frame
