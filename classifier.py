@@ -113,6 +113,4 @@ class Classifier(object):
                   .format(perfect_factor, perfect_factor_confidence, position))
             return matching_template.label
 
-        print("matched no templates in {}s"
-              .format(time.time() - benchmark))
         return None
