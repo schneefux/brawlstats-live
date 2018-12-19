@@ -34,6 +34,9 @@ def test_defeat():
     for frame in images("defeat"):
         assert classifier("post_match").classify(frame) == "defeat"
 
+def test_rank_top():
+    for frame in images("rank"):
+        assert classifier("post_match").classify(frame) in ["rank", "rank_top"]
 def test_unclassified():
     for frame in images("unclassified"):
         assert classifier("screen").classify(frame) == None
