@@ -28,8 +28,8 @@ class Classifier(object):
 
     def __init__(self, stream_resolution):
         self.stream_resolution = stream_resolution
-        self.scale_factor = None
         self.templates = []
+        self.scale_factor = None
 
     def load_templates(self, template_glob, template_resolution):
         for path in glob.glob(template_glob):

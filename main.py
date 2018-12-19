@@ -10,18 +10,23 @@ from stream import TwitchStream
 
 stream = TwitchStream(
     config.stream_resolution, config.client_id)
-classifier = Classifier(config.stream_resolution)
-classifier.load_templates(
-    "templates/*.png", config.template_resolution)
+screen_classifier = Classifier(config.stream_resolution)
+post_match_classifier = Classifier(config.stream_resolution)
+screen_classifier.load_templates(
+    "templates/screens/*.png", config.template_resolution)
+post_match_classifier.load_templates(
+    "templates/post_match/*.png", config.template_resolution)
 
 while True:
     frame = stream.get_frame()
     cv2.imshow("frame", frame)
 
-    matching_template_name = classifier.classify_image(frame)
-    if matching_template_name is not None:
-        print("current frame shows {}!"
-              .format(matching_template_name))
+    screen = screen_classifier.classify_image(frame)
+    if screen is not None:
+        post_match_classifier.scale_factor = screen_classifier.scale_factor
+        match_result = post_match_classifier.classify_image(frame)
+        print("current frame shows screen {} with {}!"
+              .format(screen, match_result))
 
     # release and check for ESC
     key = 0xFF & cv2.waitKey(1)

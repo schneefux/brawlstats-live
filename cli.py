@@ -5,11 +5,16 @@ import sys
 import config
 from classifier import Classifier
 
-classifier = Classifier(config.stream_resolution)
-classifier.load_templates("templates/*.png",
-                          config.template_resolution)
+screen_classifier = Classifier(config.stream_resolution)
+post_match_classifier = Classifier(config.stream_resolution)
+screen_classifier.load_templates(
+    "templates/screens/*.png", config.template_resolution)
+post_match_classifier.load_templates(
+    "templates/post_match/*.png", config.template_resolution)
 for path in sys.argv[1:]:
     frame = cv2.imread(path)
-    print("{} matches template {}".format(
-        path,
-        classifier.classify_image(frame)))
+    screen = screen_classifier.classify_image(frame)
+    if screen is not None:
+        match_result = post_match_classifier.classify_image(frame)
+        print("current frame shows screen {} with {}!"
+              .format(screen, match_result))
