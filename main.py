@@ -25,6 +25,13 @@ while True:
     if screen is not None:
         post_match_classifier.scale_factor = screen_classifier.scale_factor
         match_result = post_match_classifier.classify(frame)
+        if match_result is None:
+            # misclassified
+            post_match_classifier.scale_factor = screen_classifier.scale_factor = None
+            # save screenshot
+            filename = "{}_{}.png".format(
+                stream.channel, int(time.time()))
+            cv2.imwrite(filename, frame)
         print("current frame shows screen {} with {}!"
               .format(screen, match_result))
 
