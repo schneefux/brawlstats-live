@@ -32,7 +32,11 @@ class Classifier(object):
         self.scale_factor = None
 
     def load_templates(self, template_glob, template_resolution):
-        for path in glob.glob(template_glob):
+        paths = glob.glob(template_glob)
+        if len(paths) == 0:
+            print("template glob yields no paths!")
+
+        for path in paths:
             factor = float(self.stream_resolution) / template_resolution
             self.templates.append(Template(path, factor))
 
