@@ -18,7 +18,7 @@ def backgroundThread():
     while True:
         with lock:
             # release and check for ESC
-            key = 0xFF
+            key = 0xFF & cv2.waitKey()
             if key == 27:
             # ESC: quit
                 exitPressed = True
