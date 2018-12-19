@@ -6,16 +6,19 @@ import os
 import cv2
 import time
 import glob
+import json
 
 class Template(object):
-    def __init__(self, path, scaling_factor):
-        self.label = os.path.basename(os.path.splitext(path)[0])
+    def __init__(self, path, label, scaling_factor):
+        self.label = label
         image = self.source_image = cv2.imread(path)
         image = cv2.resize(image, None,
                            fx=scaling_factor, fy=scaling_factor)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         self.threshold, self.mask = cv2.threshold(
             image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        self.position = None
+        self.shape = self.mask.shape
 
 
 class Classifier(object):
@@ -38,7 +41,9 @@ class Classifier(object):
 
         for path in paths:
             factor = float(self.stream_resolution) / template_resolution
-            self.templates.append(Template(path, factor))
+            name = os.path.basename(os.path.splitext(path)[0])
+            self.templates.append(
+                Template(path, name, factor))
 
     def classify(self, frame):
         '''
@@ -55,7 +60,8 @@ class Classifier(object):
         else:
             # try a range of factors until a template matches
             factors = self.all_scaling_factors
-            perfect_factor = 1.0
+            perfect_factor = None
+            perfect_position = None
             perfect_factor_confidence = 0.0
 
         # prerender resized images
@@ -65,6 +71,14 @@ class Classifier(object):
                                       fx=factor, fy=factor)
 
             for template in self.templates:
+                position = template.position
+                if position is not None:
+                    box = template.shape
+                    scaled_frame = scaled_frame[
+                        position[1]:position[1] + box[0],
+                        position[0]:position[0] + box[1]
+                    ]
+
                 if template.mask.shape[0] > scaled_frame.shape[0] or \
                         template.mask.shape[1] > scaled_frame.shape[1]:
                     continue
@@ -77,12 +91,13 @@ class Classifier(object):
                 matches = cv2.matchTemplate(black_frame,
                                             template.mask,
                                             cv2.TM_CCOEFF_NORMED)
-                confidence = matches.max()
+                _, confidence, _, position = cv2.minMaxLoc(matches)
                 if confidence >= self.min_match_confidence:
                     if need_perfect_factor:
                         if confidence > perfect_factor_confidence:
                             matching_template = template
                             perfect_factor = factor
+                            perfect_position = position
                             perfect_factor_confidence = confidence
                     else:
                         # early break
@@ -93,8 +108,9 @@ class Classifier(object):
 
         if need_perfect_factor and matching_template is not None:
             self.scale_factor = perfect_factor
-            print("found perfect factor {} with confidence {}"
-                  .format(perfect_factor, perfect_factor_confidence))
+            matching_template.position = perfect_position
+            print("found perfect factor {} with confidence {} at position {}"
+                  .format(perfect_factor, perfect_factor_confidence, position))
             return matching_template.label
 
         print("matched no templates in {}s"
