@@ -5,25 +5,26 @@
 import cv2
 import time
 import config
+import threading
 from classifier import Classifier
 from stream import TwitchStream
-from threading import Thread
 
-class backgroundThread(Thread):
-    def __init__(self):
-        super(backgroundThread, self).__init__()
-        self.exitPressed = False
-        self.spacePressed = False
-    def run(self):
-        while not self.exitPressed:
+spacePressed = False
+escPressed = False
+
+def backgroundThread():
+    global spacePressed, escPressed
+    lock = threading.Lock()
+    while True:
+        with lock:
             # release and check for ESC
             key = 0xFF
             if key == 27:
             # ESC: quit
-                self.exitPressed = True
+                exitPressed = True
             if key == 32:
             # space: screenshot
-                self.spacePressed = True
+                spacePressed = True
             
 stream = TwitchStream(
     config.stream_resolution, config.client_id)
@@ -34,11 +35,9 @@ screen_classifier.load_templates(
 post_match_classifier.load_templates(
     "templates/post_match/*.png", config.template_resolution)
 
-running = True
-thread = backgroundThread()
-thread.start()
+threading.Thread(target=backgroundThread).start()
 
-while running:
+while True:
     frame = stream.get_frame()
     cv2.imshow("frame", frame)
     screen = screen_classifier.classify(frame)
@@ -47,9 +46,12 @@ while running:
         match_result = post_match_classifier.classify(frame)
         print("current frame shows screen {} with {}!"
               .format(screen, match_result))
-    if thread.spacePressed:
+    if spacePressed:
         filename = "{}_{}.png".format(stream.channel, int(time.time()))
         cv2.imwrite(filename, frame)
         thread.spacePressed = False
+    if escPressed:
+        backgroundThread.stop()
+        break
 
 cv2.destroyAllWindows()
