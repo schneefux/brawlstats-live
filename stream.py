@@ -10,6 +10,7 @@ class StreamSource(object):
 
 
 class TwitchStream(StreamSource):
+    channel = ""
     _twitch_headers = None
     _http_stream    = None
     _file_stream    = None
@@ -20,7 +21,7 @@ class TwitchStream(StreamSource):
         self._twitch_headers = { "Client-ID": twitch_client_id }
         self._resolution_p = "{}p".format(stream_resolution)
 
-        self._http_stream, buffer_file = self._get_stream()
+        self.channel, self._http_stream, buffer_file = self._get_stream()
         self._file_stream = open(buffer_file, "wb")
         self._flush()
         self._stream = cv2.VideoCapture(buffer_file)
@@ -49,7 +50,7 @@ class TwitchStream(StreamSource):
 
         buffer_file = "/tmp/" + channel + ".mpg"
         stream = streams[self._resolution_p].open()
-        return stream, buffer_file
+        return channel, stream, buffer_file
 
     def _flush(self):
         '''

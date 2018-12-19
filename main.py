@@ -30,7 +30,7 @@ while True:
         break
     if key == 32:
         # space: screenshot
-        filename = channel + "_" + str(int(time.time())) + ".png"
+        filename = "{}_{}.png".format(stream.channel, int(time.time()))
         cv2.imwrite(filename, frame)
 
 cv2.destroyAllWindows()
