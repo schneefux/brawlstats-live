@@ -15,5 +15,5 @@ for path in sys.argv[1:]:
     frame = cv2.imread(path)
     screen = classifier("screen").classify(frame)
     match_result = classifier("post_match").classify(frame)
-    print("current frame shows screen {} with {}!"
-          .format(screen, match_result))
+    print("{} shows screen {} with {}!"
+          .format(path, screen, match_result))
