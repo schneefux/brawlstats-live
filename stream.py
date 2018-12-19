@@ -1,5 +1,6 @@
 import os
 import cv2
+import random
 import requests
 import streamlink
 from classifier import Classifier
@@ -41,6 +42,7 @@ class TwitchStream(StreamSource):
 
     def _get_stream(self):
         channels = self._get_twitch_channel_names(self._get_game_id())
+        random.shuffle(channels)
         for channel in channels:
             # get Twitch stream
             streams = streamlink.streams(
