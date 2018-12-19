@@ -36,7 +36,7 @@ class Classifier(object):
             factor = float(self.stream_resolution) / template_resolution
             self.templates.append(Template(path, factor))
 
-    def classify_image(self, frame):
+    def classify(self, frame):
         '''
         Given a frame, return the name of the first matching template
         or None.
