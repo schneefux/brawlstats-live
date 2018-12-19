@@ -13,8 +13,8 @@ post_match_classifier.load_templates(
     "templates/post_match/*.png", config.template_resolution)
 for path in sys.argv[1:]:
     frame = cv2.imread(path)
-    screen = screen_classifier.classify_image(frame)
+    screen = screen_classifier.classify(frame)
     if screen is not None:
-        match_result = post_match_classifier.classify_image(frame)
+        match_result = post_match_classifier.classify(frame)
         print("current frame shows screen {} with {}!"
               .format(screen, match_result))

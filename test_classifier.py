@@ -22,17 +22,17 @@ def images(*folders):
 
 def test_screen_post_match():
     for frame in images("victory", "defeat"):
-        assert classifier["screen"].classify_image(frame) == "post_match"
+        assert classifier["screen"].classify(frame) == "post_match"
 
 def test_victory():
     for frame in images("victory"):
-        assert classifier["post_match"].classify_image(frame) == "victory"
+        assert classifier["post_match"].classify(frame) == "victory"
 
 def test_defeat():
     for frame in images("defeat"):
-        assert classifier["post_match"].classify_image(frame) == "defeat"
+        assert classifier["post_match"].classify(frame) == "defeat"
 
 def test_unclassified():
     for frame in images("unclassified"):
-        assert classifier["screen"].classify_image(frame) == None
-        assert classifier["post_match"].classify_image(frame) == None
+        assert classifier["screen"].classify(frame) == None
+        assert classifier["post_match"].classify(frame) == None

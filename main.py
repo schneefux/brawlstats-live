@@ -21,10 +21,10 @@ while True:
     frame = stream.get_frame()
     cv2.imshow("frame", frame)
 
-    screen = screen_classifier.classify_image(frame)
+    screen = screen_classifier.classify(frame)
     if screen is not None:
         post_match_classifier.scale_factor = screen_classifier.scale_factor
-        match_result = post_match_classifier.classify_image(frame)
+        match_result = post_match_classifier.classify(frame)
         print("current frame shows screen {} with {}!"
               .format(screen, match_result))
 
