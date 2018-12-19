@@ -8,6 +8,8 @@ import config
 from classifier import Classifier
 from stream import TwitchStream
 
+maxFPS = 10
+
 stream = TwitchStream(
     config.stream_resolution, config.client_id)
 screen_classifier = Classifier(config.stream_resolution)
@@ -18,6 +20,7 @@ post_match_classifier.load_templates(
     "templates/post_match/*.png", config.template_resolution)
 
 while True:
+    start = time.time()
     frame = stream.get_frame()
     cv2.imshow("frame", frame)
 
@@ -36,7 +39,7 @@ while True:
               .format(screen, match_result))
 
     # release and check for ESC
-    key = 0xFF & cv2.waitKey(1)
+    key = 0xFF & cv2.waitKey(int((1.0/30)*1000))
     if key == 27:
         # ESC: quit
         break
@@ -44,5 +47,5 @@ while True:
         # space: screenshot
         filename = "{}_{}.png".format(stream.channel, int(time.time()))
         cv2.imwrite(filename, frame)
-
+    time.sleep(max(1./maxFPS - (time.time() - start), 0))
 cv2.destroyAllWindows()
