@@ -15,7 +15,7 @@ for name in TEMPLATES:
 
 def images(*folders):
     for folder in folders:
-        for path in glob.glob("{}/*.png".format(folder)):
+        for path in glob.glob("test_images/{}/*.png".format(folder)):
             frame = cv2.imread(path)
             yield frame
 
