@@ -24,8 +24,7 @@ class backgroundThread(Thread):
             if key == 32:
             # space: screenshot
                 self.spacePressed = True
-                
-
+            
 stream = TwitchStream(
     config.stream_resolution, config.client_id)
 screen_classifier = Classifier(config.stream_resolution)
@@ -43,10 +42,9 @@ while running:
     frame = stream.get_frame()
     cv2.imshow("frame", frame)
     screen = screen_classifier.classify(frame)
-    #running = thread.exitPressed
     if screen is not None:
         post_match_classifier.scale_factor = screen_classifier.scale_factor
-        match_result = post_match_classifier.classify_image(frame)
+        match_result = post_match_classifier.classify(frame)
         print("current frame shows screen {} with {}!"
               .format(screen, match_result))
     if thread.spacePressed:
