@@ -13,7 +13,7 @@ stream = TwitchStream(
 screen_classifier = Classifier(config.stream_resolution)
 post_match_classifier = Classifier(config.stream_resolution)
 screen_classifier.load_templates(
-    "templates/screens/*.png", config.template_resolution)
+    "templates/screen/*.png", config.template_resolution)
 post_match_classifier.load_templates(
     "templates/post_match/*.png", config.template_resolution)
 
