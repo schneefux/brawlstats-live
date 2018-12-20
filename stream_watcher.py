@@ -1,3 +1,4 @@
+import cv2
 import time
 from threading import Timer
 from classifier import Classifier
