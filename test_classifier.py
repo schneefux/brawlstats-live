@@ -22,6 +22,10 @@ def images(*folders):
             yield image(path)
 
 
+def test_screen_versus():
+    for frame in images("versus"):
+        assert classifier("screen").classify(frame) == "versus"
+
 def test_screen_post_match():
     for frame in images("victory", "defeat"):
         assert classifier("screen").classify(frame) == "post_match"
