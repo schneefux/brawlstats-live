@@ -26,7 +26,8 @@ class Classifier(object):
     # * 16:9 phone (runickk)
     # * 21:9 phone (landi)
     # * 3:4 phone (backstabx)
-    all_scaling_factors = [1.0, 1.24, 1.35]
+    # * 21:9 phone with streamer borders (daenerysgaming)
+    all_scaling_factors = [1.0, 1.24, 1.36, 1.44]
     min_match_confidence = 0.70
 
     def __init__(self, stream_resolution):
