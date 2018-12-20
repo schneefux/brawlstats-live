@@ -1,7 +1,9 @@
+apipkg==1.5
 atomicwrites==1.2.1
 attrs==18.2.0
 certifi==2018.11.29
 chardet==3.0.4
+execnet==1.5.0
 idna==2.8
 iso-639==0.4.5
 iso3166==0.9
@@ -16,6 +18,8 @@ py==1.7.0
 pycryptodome==3.7.2
 PySocks==1.6.8
 pytest==4.0.2
+pytest-forked==0.2
+pytest-xdist==1.25.0
 requests==2.21.0
 six==1.12.0
 streamlink==0.14.2
