@@ -14,6 +14,7 @@ class StreamSource(object):
 class TwitchStream(StreamSource):
     def __init__(self, stream_resolution, twitch_client_id):
         # TODO close streams
+        self.stream_resolution = stream_resolution
         self._twitch_headers = { "Client-ID": twitch_client_id }
         self.channel, stream = self._get_random_channel(
             stream_resolution)
