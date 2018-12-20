@@ -8,8 +8,8 @@ import config
 from stream import TwitchStream
 from stream_watcher import StreamWatcher
 
-stream = TwitchStream(
-    config.stream_resolution, config.client_id)
+stream = TwitchStream(config.client_id)
+stream.start("Brawl Stars", config.stream_resolution)
 watcher = StreamWatcher()
 watcher.start(stream, config.max_fps, config)
 
@@ -27,4 +27,5 @@ while True:
         cv2.imwrite(filename, frame)
 
 watcher.stop()
+stream.stop()
 cv2.destroyAllWindows()

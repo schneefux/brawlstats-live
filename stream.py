@@ -1,10 +1,9 @@
 import json
 import random
-import requests
-import streamlink
 import subprocess
 import numpy as np
 from threading import Thread
+from twitch import TwitchAPIClient
 
 class StreamSource(object):
     def get_frame(self):
@@ -12,51 +11,43 @@ class StreamSource(object):
 
 
 class TwitchStream(StreamSource):
-    def __init__(self, stream_resolution, twitch_client_id):
-        # TODO close streams
-        self.stream_resolution = stream_resolution
-        self._twitch_headers = { "Client-ID": twitch_client_id }
-        self.channel, stream = self._get_random_channel(
-            stream_resolution)
-        self._stream = VideoStreamer(stream)
+    def __init__(self, twitch_client_id):
+        self._twitch = TwitchAPIClient(twitch_client_id)
 
-    def _get_game_id(self):
-        #r = requests.get("https://api.twitch.tv/helix/games?name=Brawl+Stars",
-        #                 headers=self._twitch_headers)
-        #twitch_game_id = r.json()["data"][0]["id"]
-        twitch_game_id = "497497" # Brawl Stars
-        return twitch_game_id
+    def start(self, game_name, stream_resolution):
+        game_id = self._twitch.get_game_id(game_name)
+        channels = self._twitch.get_live_channel_names(game_id)
 
-    def _get_twitch_channel_names(self, game_id):
-        r = requests.get("https://api.twitch.tv/helix/streams" +
-                         "?first=10&language=en&game_id=" + game_id,
-                         headers=self._twitch_headers)
-        return [data["user_name"] for data in r.json()["data"]]
+        stream = None
+        while stream is None:
+            self.channel = random.choice(channels)
+            # pick a stream with the correct resolution
+            stream = self._twitch.get_stream(
+                self.channel, stream_resolution)
 
-    def _get_random_channel(self, resolution):
-        resolution_p = "{}p".format(resolution)
-        channels = self._get_twitch_channel_names(self._get_game_id())
-        random.shuffle(channels)
-        for channel in channels:
-            # get Twitch stream
-            streams = streamlink.streams(
-                "https://www.twitch.tv/" + channel)
-            if resolution_p in streams:
-                return channel, streams[resolution_p]
+        self._stream = VideoStreamer()
+        self._stream.start(stream)
+
+    def stop(self):
+        self._stream.stop()
 
     def get_frame(self):
         return self._stream.read()
 
 
 # based on https://github.com/DanielTea/rage-analytics/blob/8e20121794478bda043df4d903aa8709f3ac79fc/engine/realtime_VideoStreamer.py
-class VideoStreamer:
+class VideoStreamer(object):
     '''
     Buffer a stream using ffmpeg, yielding every nth frame.
     '''
-    def __init__(self, stream):
+    def start(self, stream):
         self._frame = None
+        self._running = True
         self._create_pipe(stream)
-        self._start_buffer()
+        self._thread = Thread(
+            target=self._update_buffer_forever, args=())
+        self._thread.daemon = True
+        self._thread.start()
 
     def _create_pipe(self, stream):
         probe_pipe = subprocess.Popen([
@@ -72,6 +63,7 @@ class VideoStreamer:
             data for data in video_info
             if len(data.keys()) > 0
         )
+        probe_pipe.terminate()
 
         self._byte_length = video_info["width"]
         self._byte_width  = video_info["height"]
@@ -88,10 +80,9 @@ class VideoStreamer:
 
         self._frame = self._read_frame()
 
-    def _start_buffer(self):
-        t = Thread(target=self._update_buffer_forever, args=())
-        t.daemon = True
-        t.start()
+    def stop(self):
+        self._pipe.terminate()
+        self._running = False
 
     def _read_frame(self):
         raw_image = self._pipe.stdout.read(
@@ -100,7 +91,7 @@ class VideoStreamer:
             .reshape((self._byte_width, self._byte_length, 3))
 
     def _update_buffer_forever(self):
-        while True:
+        while self._running:
             self._frame = self._read_frame()
 
     def read(self):
