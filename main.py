@@ -8,8 +8,6 @@ import config
 from classifier import Classifier
 from stream import TwitchStream
 
-maxFPS = 10
-
 stream = TwitchStream(
     config.stream_resolution, config.client_id)
 screen_classifier = Classifier(config.stream_resolution)
@@ -47,5 +45,5 @@ while True:
         # space: screenshot
         filename = "{}_{}.png".format(stream.channel, int(time.time()))
         cv2.imwrite(filename, frame)
-    time.sleep(max(1./maxFPS - (time.time() - start), 0))
+    time.sleep(max(1./config.max_fps - (time.time() - start), 0))
 cv2.destroyAllWindows()
