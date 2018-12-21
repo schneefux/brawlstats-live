@@ -1,7 +1,7 @@
 import random
 
-from lib.video_buffer import VideoBuffer
-from lib.twitch import TwitchAPIClient
+from api.video_buffer import VideoBuffer
+from api.twitch import TwitchAPIClient
 from streams.stream_source import StreamSource
 
 class TwitchStreamSource(StreamSource):
@@ -11,7 +11,7 @@ class TwitchStreamSource(StreamSource):
     def __init__(self, twitch_client_id):
         self._twitch = TwitchAPIClient(twitch_client_id)
 
-    def start(self, game_name, stream_resolution,
+    def start(self, game_name, stream_resolution, fps,
               channel_name=None):
         game_id = self._twitch.get_game_id(game_name)
 
@@ -30,7 +30,7 @@ class TwitchStreamSource(StreamSource):
             return None
 
         self._stream = VideoBuffer()
-        self._stream.start(stream)
+        self._stream.start(stream, fps)
         return channel
 
     def stop(self):

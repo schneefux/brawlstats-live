@@ -16,6 +16,7 @@ stream = TwitchStreamSource(config.client_id)
 channel = sys.argv[1] if len(sys.argv) > 1 else None
 channel = stream.start("Brawl Stars",
                        config.stream_resolution,
+                       config.max_ui_fps,
                        channel)
 
 stream_config = StreamConfig(resolution=config.stream_resolution,

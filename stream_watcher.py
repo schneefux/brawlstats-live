@@ -53,6 +53,7 @@ class StreamWatcher(object):
 
         seconds_until_next = max(
             1.0/self._fps - (time.time() - start_time), 0)
-        self._timer = Timer(seconds_until_next, self._tick)
-        self._timer.start()
 
+        self._timer = Timer(seconds_until_next, self._tick)
+        self._timer.daemon = True
+        self._timer.start()
