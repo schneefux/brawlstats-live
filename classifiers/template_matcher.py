@@ -5,53 +5,15 @@ import os
 import cv2
 import glob
 import time
-import logging
-from attr import attrs, attrib, evolve
+from attr import evolve
 
-@attrs(frozen=True)
-class TemplateImage(object):
-    """
-    Store an image and its meta data.
-    """
-    image = attrib()
-    label = attrib()
-    is_position_fixed = attrib()
-    resolution = attrib()
-
-@attrs
-class Template(object):
-    """
-    Store a template.
-    """
-    template_image = attrib()
-    image = attrib()
-    position = attrib()
-    shape = attrib()
-
-    @classmethod
-    def from_template_image(cls, template_image, stream_resolution):
-        image = cls._resized_image(template_image, stream_resolution)
-        return cls(template_image=template_image,
-            position=None,
-            image=image,
-            shape=image.shape)
-
-    @staticmethod
-    def _resized_image(template_image, stream_resolution):
-        aspect_ratio_factor = float(stream_resolution) \
-            / template_image.resolution
-        image = cv2.resize(template_image.image, None,
-                           fx=aspect_ratio_factor,
-                           fy=aspect_ratio_factor,
-                           interpolation=cv2.INTER_AREA)
-        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
+from classifiers.template import Template, TemplateImage, \
+    load_template_images
 
 class TemplateMatcher(object):
     """
     Compare template images to a frame and determine the aspect ratio.
-    Convert the frame to grayscale, resize
-    and apply a template specific threshold.
+    Convert the frame to grayscale and resize.
     """
     # scale 16:9 (Twitch de facto standard) to
     # * 16:9 phone (runickk)
@@ -61,23 +23,10 @@ class TemplateMatcher(object):
     common_aspect_ratio_factors = [1.0, 1.24, 1.36, 1.44]
     min_match_confidence = 0.70
 
-    def __init__(self):
-        self.template_images = []
-
     def load_templates(self, path_glob, resolution,
                        is_position_fixed):
-        paths = glob.glob(path_glob)
-        if len(paths) == 0:
-            logging.warning("template glob %s yields no paths!",
-                            path_glob)
-
-        for path in paths:
-            name = os.path.basename(os.path.splitext(path)[0])
-            self.template_images.append(
-                TemplateImage(image=cv2.imread(path),
-                              label=name,
-                              resolution=resolution,
-                              is_position_fixed=is_position_fixed))
+        self.template_images = load_template_images(
+            path_glob, resolution, is_position_fixed)
 
     def classify(self, frame, stream_config):
         """
@@ -97,11 +46,11 @@ class TemplateMatcher(object):
         templates = []
         for factor in aspect_ratio_factors:
             for template_image in self.template_images:
-                f = stream_config.resolution / factor
+                resolution = float(stream_config.resolution) / factor
                 templates.append(
                     (factor, Template.from_template_image(
                         template_image=template_image,
-                        stream_resolution=f)))
+                        target_resolution=resolution)))
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 

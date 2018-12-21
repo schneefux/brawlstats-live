@@ -8,16 +8,19 @@ from pipe.sync_pipeline import SyncPipeline
 from pipe.async_pipeline import AsyncPipeline
 from pipe.debug_sink import DebugSink
 from pipe.screen_pipe import ScreenPipe
+from pipe.loading_versus_pipe import LoadingVersusPipe
 from pipe.victory_defeat_pipe import VictoryDefeatPipe
 
 from state.game_state import GameState
 
 class StreamWatcher(object):
     def __init__(self):
-        self._realtime_pipeline = SyncPipeline(
-            (ScreenPipe(), ))
-        self._deferred_pipeline = AsyncPipeline(
-            (VictoryDefeatPipe(), DebugSink()))
+        self._realtime_pipeline = SyncPipeline((
+            ScreenPipe(), ))
+        self._deferred_pipeline = AsyncPipeline((
+            LoadingVersusPipe(),
+            VictoryDefeatPipe(),
+            DebugSink()))
 
     def start(self, stream, config, stream_config):
         self.state = GameState(stream_config=stream_config)

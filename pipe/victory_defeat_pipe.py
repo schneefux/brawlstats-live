@@ -1,6 +1,5 @@
 import cv2
 import logging
-from attr import evolve
 
 from pipe.pipe import Pipe
 from state.game_state import MatchResult, Screen
@@ -16,7 +15,7 @@ class VictoryDefeatPipe(Pipe):
         self._matcher = TemplateMatcher()
 
     def start(self):
-        self._matcher.load_templates("templates/post_match/*.png",
+        self._matcher.load_templates("templates/victory_defeat/*.png",
                                      1080, True)
 
     def process(self, frame, state):

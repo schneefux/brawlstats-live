@@ -21,13 +21,15 @@ class DebugSink(Sink):
         logging.debug(
             "aspect ratio: %sknown, " +
             "current screen: %s, last screen: %s, " +
-            "last match: %s, " +
+            "last match: %s, blue: %s, red: %s, " +
             "fps: %2.2f, last frame: %2.2fs",
 
             "un" if state.stream_config.aspect_ratio_factor is None else "",
             state.current_screen,
             state.last_known_screen,
             state.last_match_result,
+            ",".join([b.name for b in state.blue_team]),
+            ",".join([b.name for b in state.red_team]),
             len(self._durations) / sum(self._durations),
             duration
         )

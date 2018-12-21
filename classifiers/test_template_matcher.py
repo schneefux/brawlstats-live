@@ -24,38 +24,38 @@ def images(*folders):
 
 
 def test_screen_versus():
-    for frame in images("versus"):
+    for frame in images("loading_versus"):
         assert matcher("screen")\
-            .classify(frame, stream_config)[0] == "versus"
+            .classify(frame, stream_config)[0] == "loading_versus"
 
-def test_screen_post_match():
+def test_screen_victory_defeat():
     for frame in images("victory", "defeat"):
         assert matcher("screen")\
-            .classify(frame, stream_config)[0] == "post_match"
+            .classify(frame, stream_config)[0] == "victory_defeat"
 
 def test_victory():
     for frame in images("victory"):
-        assert matcher("post_match")\
+        assert matcher("victory_defeat")\
             .classify(frame, stream_config)[0] == "victory"
 
 def test_defeat():
     for frame in images("defeat"):
-        assert matcher("post_match")\
+        assert matcher("victory_defeat")\
             .classify(frame, stream_config)[0] == "defeat"
 
 def test_rank_top():
     for frame in images("rank"):
-        assert matcher("post_match")\
+        assert matcher("victory_defeat")\
             .classify(frame, stream_config)[0] in ["rank", "rank_top"]
 def test_unclassified():
     for frame in images("unclassified"):
         assert matcher("screen")\
             .classify(frame, stream_config)[0] == None
-        assert matcher("post_match")\
+        assert matcher("victory_defeat")\
             .classify(frame, stream_config)[0] == None
 
 def test_repeated_classification():
     c = matcher("screen")
     path = "./test_images/victory/phonecats_victory_screenshot.png"
-    assert c.classify(image(path), stream_config)[0] == "post_match"
-    assert c.classify(image(path), stream_config)[0] == "post_match"
+    assert c.classify(image(path), stream_config)[0] == "victory_defeat"
+    assert c.classify(image(path), stream_config)[0] == "victory_defeat"
