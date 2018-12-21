@@ -21,9 +21,7 @@ class VictoryDefeatPipe(Pipe):
 
     def process(self, frame, state):
         if state.screen != Screen.VICTORY_DEFEAT:
-            return state
-
-        logging.debug("victory defeat processing")
+            return {}
 
         result_label = self._matcher.classify(frame,
                                               state.stream_config)[0]
@@ -35,7 +33,8 @@ class VictoryDefeatPipe(Pipe):
             logging.warning(
                 "Screen was classified as victory/defeat " +
                 "but no result template matched")
-            return state
+            return {}
 
-        return evolve(state,
-                      last_match_result=MatchResult(result_label))
+        return {
+            "last_match_result": MatchResult(result_label)
+        }

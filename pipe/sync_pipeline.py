@@ -1,3 +1,5 @@
+from attr import evolve
+
 from pipe.pipe import Pipe
 
 class SyncPipeline(Pipe):
@@ -12,6 +14,10 @@ class SyncPipeline(Pipe):
             pipe.start()
 
     def process(self, frame, state):
+        changes = {}
         for pipe in self.pipes:
-            state = pipe.process(frame, state)
-        return state
+            changes = {
+                **changes,
+                **pipe.process(frame, evolve(state, **changes))
+            }
+        return changes

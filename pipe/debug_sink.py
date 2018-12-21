@@ -27,3 +27,5 @@ class DebugSink(Sink):
             len(self._durations) / sum(self._durations),
             duration
         )
+
+        return {}

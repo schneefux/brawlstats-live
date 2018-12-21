@@ -8,4 +8,7 @@ class Pipe(object):
         raise NotImplementedError()
 
     def process(self, frame, state):
+        """
+        Process the frame and return a mutation to the GameState.
+        """
         raise NotImplementedError()

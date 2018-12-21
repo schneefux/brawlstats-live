@@ -1,4 +1,3 @@
-import logging
 from attr import evolve
 
 from pipe.pipe import Pipe
@@ -19,8 +18,6 @@ class ScreenPipe(Pipe):
                                      1080, True)
 
     def process(self, frame, state):
-        logging.debug("screen processing")
-
         screen_label, stream_config = self._matcher.classify(
             frame, state.stream_config)
 
@@ -29,9 +26,11 @@ class ScreenPipe(Pipe):
             screen_label = Screen.PLAY_AGAIN
 
         if screen_label is None:
-            return evolve(state,
-                          stream_config=stream_config)
+            return {
+                "stream_config": stream_config
+            }
 
-        return evolve(state,
-                      screen=Screen(screen_label),
-                      stream_config=stream_config)
+        return {
+            "screen": Screen(screen_label),
+            "stream_config": stream_config
+        }
