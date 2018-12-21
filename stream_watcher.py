@@ -1,13 +1,17 @@
 import cv2
 import time
+from attr import evolve
+from state.game_state import GameState, Screen
 from threading import Timer
-from classifier import Classifier
+from classifiers.template_matcher import TemplateMatcher
 
 class StreamWatcher(object):
-    def start(self, stream, fps, config):
+    def start(self, stream, config, stream_config):
+        self.state = GameState(stream_config=stream_config,
+                               screen=None)
         self._stream = stream
-        self._fps = fps
-        self._classifiers = self._create_classifiers(config)
+        self._fps = config.max_fps
+        self._matchers = self._create_matchers(config)
         self._running = True
         self._tick()
 
@@ -15,49 +19,54 @@ class StreamWatcher(object):
         self._running = False
         self._timer.cancel()
 
-    def _create_classifiers(self, config):
-        classifier = dict()
-        classifier["screen"] = Classifier(
-            config.stream_resolution)
-        classifier["post_match"] = Classifier(
-            config.stream_resolution)
-        classifier["screen"].load_templates(
+    @staticmethod
+    def _create_matchers(config):
+        matchers = dict()
+        matchers["screen"] = TemplateMatcher()
+        matchers["post_match"] = TemplateMatcher()
+        matchers["screen"].load_templates(
             "templates/screen/*.png",
-            config.template_resolution)
-        classifier["post_match"].load_templates(
+            config.template_resolution, True)
+        matchers["post_match"].load_templates(
             "templates/post_match/*.png",
-            config.template_resolution)
-        return classifier
+            config.template_resolution, True)
+        return matchers
 
     def _tick(self):
         if not self._running:
             return
 
         start_time = time.time()
-        self._watch_frame(self._classifiers, self._stream)
+        self.state = self._watch_frame(self._stream,
+                                       self._matchers,
+                                       self.state)
 
         seconds_until_next = max(
             1.0/self._fps - (time.time() - start_time), 0)
         self._timer = Timer(seconds_until_next, self._tick)
         self._timer.start()
 
-    def _watch_frame(self, classifier, stream):
+    @staticmethod
+    def _watch_frame(stream, matchers, state):
         frame = stream.get_frame()
 
-        screen = classifier["screen"].classify(frame)
-        if screen is not None:
-            classifier["post_match"].scale_factor = \
-                classifier["screen"].scale_factor
-            match_result = classifier["post_match"].classify(frame)
-            if match_result is None:
+        screen_label, stream_config = matchers["screen"].classify(
+            frame, state.stream_config)
+        if screen_label is not None:
+            result_label, stream_config = matchers["post_match"]\
+                .classify(frame, state.stream_config)
+            if result_label is not None:
+                state = evolve(state, screen=Screen(screen_label))
+            else:
                 # misclassified
-                classifier["post_match"].scale_factor = \
-                    classifier["screen"].scale_factor = None
+                stream_config = evolve(stream_config,
+                                       aspect_ratio_factor=None)
                 # save screenshot
                 filename = "{}_{}.png".format(
                     stream.channel, int(time.time()))
                 cv2.imwrite(filename, frame)
 
             print("current frame shows screen {} with {}!"
-                  .format(screen, match_result))
+                  .format(screen_label, result_label))
 
+        return evolve(state, stream_config=stream_config)

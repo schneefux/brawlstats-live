@@ -3,17 +3,20 @@
 import cv2
 import sys
 import config
-from classifier import Classifier
+from state.stream_config import StreamConfig
+from classifiers.template_matcher import TemplateMatcher
 
-def classifier(folder):
-    classifier = Classifier(config.stream_resolution)
-    classifier.load_templates("templates/{}/*.png".format(folder),
-                              config.template_resolution)
-    return classifier
+stream_config = StreamConfig(resolution=480, aspect_ratio_factor=None)
+
+def matcher(folder):
+    matcher = TemplateMatcher()
+    matcher.load_templates("templates/{}/*.png".format(folder),
+                           1080, True)
+    return matcher
 
 for path in sys.argv[1:]:
     frame = cv2.imread(path)
-    screen = classifier("screen").classify(frame)
-    match_result = classifier("post_match").classify(frame)
+    screen = matcher("screen").classify(frame, stream_config)[0]
+    match_result = matcher("post_match").classify(frame, stream_config)[0]
     print("{} shows screen {} with {}!"
           .format(path, screen, match_result))

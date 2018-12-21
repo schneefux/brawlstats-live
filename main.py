@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-# based on https://gist.github.com/kscottz/242176c5bdb282b0a327
-# using streamlink instead of livestreamer https://streamlink.github.io/api_guide.html
 
 import cv2
 import time
 import config
+from state.stream_config import StreamConfig
 from stream import TwitchStream
 from stream_watcher import StreamWatcher
 
+stream_config = StreamConfig(resolution=config.stream_resolution,
+                             aspect_ratio_factor=None)
+
 stream = TwitchStream(config.client_id)
-stream.start("Brawl Stars", config.stream_resolution)
+stream.start("Brawl Stars", stream_config.resolution)
+
 watcher = StreamWatcher()
-watcher.start(stream, config.max_fps, config)
+watcher.start(stream, config, stream_config)
 
 while True:
     frame = stream.get_frame()
