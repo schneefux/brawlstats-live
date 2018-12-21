@@ -5,3 +5,4 @@ class StreamConfig(object):
     resolution = attrib(type=int)
     # stream * ratio factor = 16:9
     aspect_ratio_factor = attrib(type=float, default=None)
+    channel = attrib(type=str, default=None)

@@ -3,15 +3,20 @@
 import cv2
 import time
 import config
+import logging
+
 from state.stream_config import StreamConfig
-from stream import TwitchStream
+from streams.twitch_stream_source import TwitchStreamSource
 from stream_watcher import StreamWatcher
 
-stream_config = StreamConfig(resolution=config.stream_resolution,
-                             aspect_ratio_factor=None)
+logging.basicConfig(level=logging.DEBUG)
 
-stream = TwitchStream(config.client_id)
-stream.start("Brawl Stars", stream_config.resolution)
+stream = TwitchStreamSource(config.client_id)
+stream.start("Brawl Stars", config.stream_resolution)
+
+stream_config = StreamConfig(resolution=config.stream_resolution,
+                             channel=stream.channel,
+                             aspect_ratio_factor=None)
 
 watcher = StreamWatcher()
 watcher.start(stream, config, stream_config)

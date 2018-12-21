@@ -14,9 +14,10 @@ def matcher(folder):
                            1080, True)
     return matcher
 
-for path in sys.argv[1:]:
-    frame = cv2.imread(path)
-    screen = matcher("screen").classify(frame, stream_config)[0]
-    match_result = matcher("post_match").classify(frame, stream_config)[0]
-    print("{} shows screen {} with {}!"
-          .format(path, screen, match_result))
+if __name__ == "__main__":
+    for path in sys.argv[1:]:
+        frame = cv2.imread(path)
+        screen = matcher("screen").classify(frame, stream_config)[0]
+        match_result = matcher("post_match").classify(frame, stream_config)[0]
+        print("{} shows screen {} with {}!"
+              .format(path, screen, match_result))
