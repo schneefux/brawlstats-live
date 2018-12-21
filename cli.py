@@ -27,7 +27,7 @@ if __name__ == "__main__":
             .classify(frame, stream_config)
         result_label = matcher("victory_defeat")\
             .classify(frame, stream_config)[0]
-        brawlers = [b[0].name for b in mmatcher("brawler")\
+        brawlers = [b[0] for b in mmatcher("brawler")\
                     .classify(frame, stream_config)]
         print("{} shows screen {} with {} and {}!"
               .format(path, screen_label, result_label, brawlers))
