@@ -19,10 +19,14 @@ class DebugSink(Sink):
             self._durations = self._durations[1:]
 
         logging.debug(
-            "aspect ratio known: %s, screen: %s, last result: %s, " +
-            "fps: %2.2f, last frame: %2.2f",
-            state.stream_config.aspect_ratio_factor is not None,
-            state.screen,
+            "aspect ratio: %sknown, " +
+            "current screen: %s, last screen: %s, " +
+            "last match: %s, " +
+            "fps: %2.2f, last frame: %2.2fs",
+
+            "un" if state.stream_config.aspect_ratio_factor is None else "",
+            state.current_screen,
+            state.last_known_screen,
             state.last_match_result,
             len(self._durations) / sum(self._durations),
             duration

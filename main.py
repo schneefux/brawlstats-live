@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import cv2
+import sys
 import time
 import config
 import logging
@@ -12,14 +13,19 @@ from stream_watcher import StreamWatcher
 logging.basicConfig(level=logging.DEBUG)
 
 stream = TwitchStreamSource(config.client_id)
-stream.start("Brawl Stars", config.stream_resolution)
+channel = sys.argv[1] if len(sys.argv) > 1 else None
+channel = stream.start("Brawl Stars",
+                       config.stream_resolution,
+                       channel)
 
 stream_config = StreamConfig(resolution=config.stream_resolution,
-                             channel=stream.channel,
+                             channel=channel,
                              aspect_ratio_factor=None)
 
 watcher = StreamWatcher()
 watcher.start(stream, config, stream_config)
+
+logging.info("Watching %s's channel", channel)
 
 while True:
     frame = stream.get_frame()
@@ -31,7 +37,7 @@ while True:
         break
     if key == 32:
         # space: screenshot
-        filename = "{}_{}.png".format(stream.channel, int(time.time()))
+        filename = "{}_{}.png".format(channel, int(time.time()))
         cv2.imwrite(filename, frame)
 
 watcher.stop()

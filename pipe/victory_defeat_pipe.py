@@ -20,7 +20,7 @@ class VictoryDefeatPipe(Pipe):
                                      1080, True)
 
     def process(self, frame, state):
-        if state.screen != Screen.VICTORY_DEFEAT:
+        if state.current_screen != Screen.VICTORY_DEFEAT:
             return {}
 
         result_label = self._matcher.classify(frame,

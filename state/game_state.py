@@ -3,11 +3,14 @@ from attr import attrs, attrib
 from state.stream_config import StreamConfig
 
 class Screen(Enum):
-    MAIN_MENU      = "main_menu"
-    LOADING_VERSUS = "versus"
-    INGAME         = "ingame"
-    VICTORY_DEFEAT = "post_match"
-    PLAY_AGAIN     = "play_again"
+    """
+    Screens in the order they appear.
+    """
+    MAIN_MENU      = 0
+    LOADING_VERSUS = 1
+    INGAME         = 2
+    VICTORY_DEFEAT = 3
+    PLAY_AGAIN     = 4
 
 class MatchResult(Enum):
     VICTORY  = "victory"
@@ -18,7 +21,7 @@ class MatchResult(Enum):
 @attrs(frozen=True)
 class GameState(object):
     stream_config = attrib(type=StreamConfig)
-    screen = attrib(type=Screen)
+    current_screen = attrib(type=Screen, default=None)
+    last_known_screen = attrib(type=Screen, default=None)
     last_match_result = attrib(type=MatchResult, default=None)
     timestamp = attrib(type=int, default=None)
-    last_frame_processed_timestamp = attrib(type=int, default=None)

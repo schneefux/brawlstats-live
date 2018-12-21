@@ -20,8 +20,7 @@ class StreamWatcher(object):
             (VictoryDefeatPipe(), DebugSink()))
 
     def start(self, stream, config, stream_config):
-        self.state = GameState(stream_config=stream_config,
-                               screen=None)
+        self.state = GameState(stream_config=stream_config)
         self._stream = stream
         self._fps = config.max_fps
         self._running = True

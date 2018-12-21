@@ -68,7 +68,8 @@ class TemplateMatcher(object):
                        is_position_fixed):
         paths = glob.glob(path_glob)
         if len(paths) == 0:
-            logging.warning("template glob yields no paths!")
+            logging.warning("template glob %s yields no paths!",
+                            path_glob)
 
         for path in paths:
             name = os.path.basename(os.path.splitext(path)[0])

@@ -9,22 +9,29 @@ class TwitchStreamSource(StreamSource):
     Twitch buffered stream source.
     """
     def __init__(self, twitch_client_id):
-        self.channel = None
         self._twitch = TwitchAPIClient(twitch_client_id)
 
-    def start(self, game_name, stream_resolution):
+    def start(self, game_name, stream_resolution,
+              channel_name=None):
         game_id = self._twitch.get_game_id(game_name)
-        channels = self._twitch.get_live_channel_names(game_id)
 
-        stream = None
-        while stream is None:
-            self.channel = random.choice(channels)
-            # pick a stream with the correct resolution
-            stream = self._twitch.get_stream(
-                self.channel, stream_resolution)
+        if channel_name is None:
+            channels = self._twitch.get_live_channel_names(game_id)
+            random.shuffle(channels)
+        else:
+            channels = [channel_name]
+
+        for channel in channels:
+            stream = self._twitch.get_stream(channel,
+                                             stream_resolution)
+            if stream is not None:
+                break
+        else:
+            return None
 
         self._stream = VideoBuffer()
         self._stream.start(stream)
+        return channel
 
     def stop(self):
         self._stream.stop()
