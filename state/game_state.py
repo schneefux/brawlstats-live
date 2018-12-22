@@ -22,18 +22,22 @@ class MatchResult(Enum):
 
 class Brawler(Enum):
     BARLEY   = "barley"
+    BO       = "bo"
     BROCK    = "brock"
+    BULL     = "bull"
     COLT     = "colt"
+    DARRYL   = "darryl"
+    DYNAMIKE = "dynamike"
     EL_PRIMO = "el_primo"
+    FRANK    = "frank"
     JESSIE   = "jessie"
+    MORTIS   = "mortis"
     NITA     = "nita"
     PENNY    = "penny"
     POCO     = "poco"
     RICOCHET = "ricochet"
     SHELLY   = "shelly"
-    FRANK    = "frank"
-    DYNAMIKE = "dynamike"
-    MORTIS   = "mortis"
+    TARA     = "tara"
 
 
 @attrs(frozen=True)
