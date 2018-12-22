@@ -5,7 +5,7 @@ from pipe.pipe import Pipe
 from state.game_state import Screen, Brawler
 from classifiers.multi_template_matcher import MultiTemplateMatcher
 
-class LoadingVersusPipe(Pipe):
+class VersusPipe(Pipe):
     """
     Extract information from the versus screen.
     """
@@ -19,7 +19,7 @@ class LoadingVersusPipe(Pipe):
                                      1080)
 
     def process(self, frame, state):
-        if state.current_screen != Screen.LOADING_VERSUS or \
+        if state.current_screen != Screen.VERSUS or \
                 state.stream_config.aspect_ratio_factor is None:
             return {}
 

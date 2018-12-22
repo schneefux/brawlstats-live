@@ -1,18 +1,33 @@
-from enum import Enum
+from enum import Enum, unique
 from attr import attrs, attrib
 from state.stream_config import StreamConfig
 
+@unique
 class Screen(Enum):
-    """
-    Screens in the order they appear.
-    """
-    MAIN_MENU      = 0
-    LOADING_VERSUS = 1
-    INGAME         = 2
-    VICTORY_DEFEAT = 3
-    PLAY_AGAIN     = 4
+    # corresponds to templates/screen/{name.lower()}.png
+    MAIN_MENU = {
+        "next": ("battle_log", "loading")
+    }
+    BATTLE_LOG = {
+        "next": ("main_menu", )
+    }
+    LOADING = {
+        "next": ("main_menu", "versus", "victory_defeat")
+    }
+    VERSUS = {
+        "next": ("victory_defeat", )
+    }
+    VICTORY_DEFEAT = {
+        "next": ("play_again", )
+    }
+    PLAY_AGAIN = {
+        "next": ("loading", "main_menu")
+    }
 
+    def get_next(self):
+        return (Screen[n.upper()] for n in self.value["next"])
 
+@unique
 class MatchResult(Enum):
     VICTORY  = "victory"
     DEFEAT   = "defeat"
@@ -20,6 +35,7 @@ class MatchResult(Enum):
     RANK_TOP = "rank_top"
 
 
+@unique
 class Brawler(Enum):
     BARLEY   = "barley"
     BO       = "bo"

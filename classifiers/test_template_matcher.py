@@ -24,9 +24,9 @@ def images(*folders):
 
 
 def test_screen_versus():
-    for frame in images("loading_versus"):
+    for frame in images("versus"):
         assert matcher("screen")\
-            .classify(frame, stream_config)[0] == "loading_versus"
+            .classify(frame, stream_config)[0] == "versus"
 
 def test_screen_victory_defeat():
     for frame in images("victory", "defeat"):

@@ -5,7 +5,7 @@ import glob
 
 from state.game_state import GameState, Screen, Brawler
 from state.stream_config import StreamConfig
-from pipe.loading_versus_pipe import LoadingVersusPipe
+from pipe.versus_pipe import VersusPipe
 
 def assert_lists_same(list1, list2):
     assert all([x in list2 for x in list1])
@@ -15,8 +15,8 @@ def test_should_recognize_teams():
     stream_config = StreamConfig(resolution=480,
                                  aspect_ratio_factor=1.0)
     state = GameState(stream_config=stream_config,
-                      current_screen=Screen.LOADING_VERSUS)
-    pipe = LoadingVersusPipe()
+                      current_screen=Screen.VERSUS)
+    pipe = VersusPipe()
     pipe.start()
 
     image = cv2.imread(
@@ -33,8 +33,8 @@ def test_should_noop_missing_aspect_ratio():
     stream_config = StreamConfig(resolution=480,
                                  aspect_ratio_factor=None)
     state = GameState(stream_config=stream_config,
-                      current_screen=Screen.LOADING_VERSUS)
-    pipe = LoadingVersusPipe()
+                      current_screen=Screen.VERSUS)
+    pipe = VersusPipe()
     pipe.start()
 
     image = cv2.imread(

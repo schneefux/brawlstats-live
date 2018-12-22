@@ -25,8 +25,10 @@ class ScreenPipe(Pipe):
         screen_label = None
 
         if state.last_known_screen is None:
-            # unknown, try all
-            for matcher in self._matchers.values():
+            # unknown, try to find match start screens
+            matchers = [self._matchers[screen] for screen in Screen
+                        if Screen.VICTORY_DEFEAT in screen.get_next()]
+            for matcher in matchers:
                 screen_label, stream_config = matcher.classify(
                     frame, state.stream_config)
                 if screen_label is not None:
@@ -54,28 +56,18 @@ class ScreenPipe(Pipe):
                     "last_known_screen": state.current_screen
                 }
 
-        # check if it's the next screen
+        # check if it's one of the next screens
         if state.last_known_screen is not None:
-            next_screen_index = state.last_known_screen.value
-            while True:
-                next_screen_index = (next_screen_index + 1) \
-                    % len(Screen)
-                next_screen = list(Screen)[next_screen_index]
-                if len(self._matchers[next_screen].template_images) > 0:
-                    # TODO add templates for the missing screens
-                    # and remove this loop
-                    break
-
-            screen_label = self._matchers[next_screen]\
-                .classify(frame, state.stream_config)[0]
-
-            if screen_label is not None:
-                # match
-                screen = Screen[screen_label.upper()]
-                return {
-                    "current_screen": screen,
-                    "last_known_screen": screen
-                }
+            for screen in state.last_known_screen.get_next():
+                screen_label = self._matchers[screen]\
+                    .classify(frame, state.stream_config)[0]
+                if screen_label is not None:
+                    # match
+                    screen = Screen[screen_label.upper()]
+                    return {
+                        "current_screen": screen,
+                        "last_known_screen": screen
+                    }
 
         # no match
         return {}
