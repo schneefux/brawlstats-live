@@ -31,6 +31,9 @@ class Brawler(Enum):
     POCO     = "poco"
     RICOCHET = "ricochet"
     SHELLY   = "shelly"
+    FRANK    = "frank"
+    DYNAMIKE = "dynamike"
+    MORTIS   = "mortis"
 
 
 @attrs(frozen=True)
