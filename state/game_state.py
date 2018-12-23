@@ -47,13 +47,16 @@ class Brawler(Enum):
     EL_PRIMO = "el_primo"
     FRANK    = "frank"
     JESSIE   = "jessie"
+    LEON     = "leon"
     MORTIS   = "mortis"
     NITA     = "nita"
     PENNY    = "penny"
     POCO     = "poco"
     RICOCHET = "ricochet"
     SHELLY   = "shelly"
+    SPIKE    = "spike"
     TARA     = "tara"
+    BOSS_ROBOT = "boss_robot"
 
 
 @attrs(frozen=True)
