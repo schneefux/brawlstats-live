@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 
+# TODO update for screen box changes
+
 import cv2
 import glob
 from state.stream_config import StreamConfig
 from classifiers.template_matcher import TemplateMatcher
 
-stream_config = StreamConfig(resolution=480)
+stream_config = StreamConfig(resolution=480,
+                             screen_box=((0, 0), (852, 480)))
 
 def matcher(folder):
     matcher = TemplateMatcher()
     matcher.load_templates("templates/{}/*.png".format(folder),
-                           1080, True)
+                           1080)
     return matcher
 
 def image(path):

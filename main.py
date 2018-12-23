@@ -5,6 +5,7 @@ import sys
 import time
 import config
 import logging
+import numpy as np
 
 from state.stream_config import StreamConfig
 from streams.twitch_stream_source import TwitchStreamSource
@@ -20,8 +21,7 @@ channel = stream.start("Brawl Stars",
                        channel)
 
 stream_config = StreamConfig(resolution=config.stream_resolution,
-                             channel=channel,
-                             aspect_ratio_factor=None)
+                             channel=channel)
 
 watcher = StreamWatcher()
 watcher.start(stream, config, stream_config)
@@ -30,6 +30,11 @@ logging.info("Watching %s's channel", channel)
 
 while True:
     frame = stream.get_frame()
+
+    box = watcher.state.stream_config.screen_box
+    if box is not None:
+        cv2.rectangle(frame, box[0], box[1],
+                      (255, 0, 0), 2)
     cv2.imshow("frame", frame)
 
     key = 0xFF & cv2.waitKey(int(1.0/config.max_ui_fps*1000))

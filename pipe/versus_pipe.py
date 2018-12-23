@@ -20,7 +20,7 @@ class VersusPipe(Pipe):
 
     def process(self, frame, state):
         if state.current_screen != Screen.VERSUS or \
-                state.stream_config.aspect_ratio_factor is None:
+                state.stream_config.screen_box is None:
             return {}
 
         matches = self._matcher.classify(frame,
@@ -35,7 +35,8 @@ class VersusPipe(Pipe):
                 "but no brawler template matched")
             return {}
 
-        average_y = state.stream_config.resolution / 2
+        screen_box = state.stream_config.screen_box
+        average_y = (screen_box[1][1] - screen_box[0][1]) / 2
         blue_team = [Brawler(match[0]) for match in matches
                      if match[1][0] > average_y]
         red_team = [Brawler(match[0]) for match in matches

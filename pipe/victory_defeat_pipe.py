@@ -16,7 +16,7 @@ class VictoryDefeatPipe(Pipe):
 
     def start(self):
         self._matcher.load_templates("templates/victory_defeat/*.png",
-                                     1080, True)
+                                     1080)
 
     def process(self, frame, state):
         if state.current_screen != Screen.VICTORY_DEFEAT:

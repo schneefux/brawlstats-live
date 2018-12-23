@@ -19,7 +19,7 @@ def image(path):
 
 def test_loading_screen_brawlers_1():
     stream_config = StreamConfig(resolution=480,
-                                 aspect_ratio_factor=1.0)
+                                 screen_box=((0, 0), (852, 480)))
     matches = matcher("brawler").classify(
         image("test_images/brawler/" +
               "jessie_poco_colt_penny_barley_nita.png"),
@@ -35,17 +35,17 @@ def test_loading_screen_brawlers_1():
 
 def test_loading_screen_brawlers_2():
     stream_config = StreamConfig(resolution=480,
-                                 aspect_ratio_factor=1.36)
+                                 screen_box=((236, 0), (852, 468)))
     matches = matcher("brawler").classify(
         image("test_images/brawler/" +
               "frank_poco_nita_jessie_nita_pam.png"),
         stream_config)
     brawlers = [match[0] for match in matches]
     # TODO: Add missing templates
-    #assert "frank" in brawlers
+    assert "frank" in brawlers
     assert "poco" in brawlers
     assert "nita" in brawlers
     assert "jessie" in brawlers
     #assert "pam" in brawlers
     #assert len(brawlers) == 6
-    assert len(brawlers) == 4
+    assert len(brawlers) == 5

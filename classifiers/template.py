@@ -11,8 +11,7 @@ class TemplateImage(object):
     """
     image = attrib()
     label = attrib()
-    is_position_fixed = attrib()
-    resolution = attrib()
+    height = attrib()
 
 
 @attrs
@@ -22,29 +21,22 @@ class Template(object):
     """
     template_image = attrib()
     image = attrib()
-    position = attrib()
-    shape = attrib()
 
     @classmethod
-    def from_template_image(cls, template_image, target_resolution):
-        image = cls._resized_image(template_image, target_resolution)
-        return cls(template_image=template_image,
-            position=None,
-            image=image,
-            shape=image.shape)
+    def from_template_image(cls, template_image, target_height):
+        image = cls._resized_image(template_image, target_height)
+        return cls(template_image=template_image, image=image)
 
     @staticmethod
-    def _resized_image(template_image, target_resolution):
-        aspect_ratio_factor = float(target_resolution) \
-            / template_image.resolution
+    def _resized_image(template_image, target_height):
+        factor = float(target_height) / float(template_image.height)
         image = cv2.resize(template_image.image, None,
-                           fx=aspect_ratio_factor,
-                           fy=aspect_ratio_factor,
+                           fx=factor, fy=factor,
                            interpolation=cv2.INTER_AREA)
         return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
-def load_template_images(path_glob, resolution, is_position_fixed):
+def load_template_images(path_glob, height):
     template_images = []
     paths = glob.glob(path_glob)
     if len(paths) == 0:
@@ -56,7 +48,6 @@ def load_template_images(path_glob, resolution, is_position_fixed):
         template_images.append(
             TemplateImage(image=cv2.imread(path),
                           label=name,
-                          resolution=resolution,
-                          is_position_fixed=is_position_fixed))
+                          height=height))
 
     return template_images

@@ -13,7 +13,7 @@ def assert_lists_same(list1, list2):
 
 def test_should_recognize_teams():
     stream_config = StreamConfig(resolution=480,
-                                 aspect_ratio_factor=1.0)
+                                 screen_box=((0, 0), (852, 480)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VERSUS)
     pipe = VersusPipe()
@@ -28,18 +28,3 @@ def test_should_recognize_teams():
                       [Brawler.JESSIE, Brawler.POCO, Brawler.COLT])
     assert_lists_same(changes["blue_team"],
                       [Brawler.PENNY, Brawler.BARLEY, Brawler.NITA])
-
-def test_should_noop_missing_aspect_ratio():
-    stream_config = StreamConfig(resolution=480,
-                                 aspect_ratio_factor=None)
-    state = GameState(stream_config=stream_config,
-                      current_screen=Screen.VERSUS)
-    pipe = VersusPipe()
-    pipe.start()
-
-    image = cv2.imread(
-        "test_images/brawler/" +
-        "jessie_poco_colt_penny_barley_nita.png")
-    changes = pipe.process(image, state)
-
-    assert changes == {}

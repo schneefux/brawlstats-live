@@ -22,42 +22,48 @@ class MultiTemplateMatcher(object):
 
     def load_templates(self, path_glob, resolution):
         self.template_images = load_template_images(
-            path_glob, resolution, False)
+            path_glob, resolution)
 
     def classify(self, frame, stream_config):
         """
         Given a frame, return a list of name, position tuples
         of matching templates.
         """
-        templates = []
-        for template_image in self.template_images:
-            resolution = stream_config.resolution \
-                / stream_config.aspect_ratio_factor
-            templates.append(Template.from_template_image(
-                template_image=template_image,
-                target_resolution=resolution))
+        screen_box = stream_config.screen_box
+        frame = frame[screen_box[0][1]:screen_box[1][1],
+                      screen_box[0][0]:screen_box[1][0]]
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         matches = []
 
-        for template in templates:
-            if template.shape[0] > gray_frame.shape[0] or \
-                    template.shape[1] > gray_frame.shape[1]:
+        for template_image in self.template_images:
+            template = Template.from_template_image(
+                template_image=template_image,
+                target_height=gray_frame.shape[0])
+
+            if template.image.shape[0] > gray_frame.shape[0] or \
+                    template.image.shape[1] > gray_frame.shape[1]:
                 continue
 
             res = cv2.matchTemplate(gray_frame,
                                     template.image,
                                     cv2.TM_CCOEFF_NORMED)
             positions = np.where(res > self.min_match_confidence)
+
             for position in zip(*positions):
+                # translate position for full stream coordinates
+                position_t = (position[0] + screen_box[0][0],
+                              position[1] + screen_box[0][1])
+
                 for _, match_position in matches:
-                    dist = sqrt((position[0]-match_position[0])**2 + \
-                                (position[1]-match_position[1])**2)
+                    dist = sqrt(
+                        (position_t[0]-match_position[0])**2 + \
+                        (position_t[1]-match_position[1])**2)
                     if dist < self.offset_tolerance:
-                        # there is an existing match close to this one
+                        # ignore a close similar match
                         break
                 else:
                     matches.append((template.template_image.label,
-                                    position))
+                                    position_t))
 
         return matches
