@@ -38,23 +38,23 @@ class VideoBuffer(object):
                       "-loglevel", "quiet", # no text output
                       "-an", # disable audio
                       "-f", "image2pipe",
-                      "-framerate", str(self._fps),
                       "-pix_fmt", "bgr24",
+                      "-r", str(self._fps),
                       "-vcodec", "rawvideo", "-"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
 
-        self._frame = self._read_frame()
+        self._frame = self._tick()
 
     def stop(self):
         self._pipe.terminate()
         self._running = False
 
-    def _read_frame(self):
+    def _tick(self):
         if not self._running:
             return
 
-        self._timer = Timer(1.0/self._fps, self._read_frame)
+        self._timer = Timer(1.0/self._fps, self._tick)
         self._timer.daemon = True
         self._timer.start()
 
