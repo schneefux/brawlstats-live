@@ -1,5 +1,6 @@
 import cv2
 import logging
+from attr import evolve
 
 from pipe.pipe import Pipe
 from state.game_state import MatchResult, Screen
@@ -22,9 +23,9 @@ class VictoryDefeatPipe(Pipe):
         if state.current_screen != Screen.VICTORY_DEFEAT:
             return {}
 
-        result_label = self._matcher.classify(frame,
-                                              state.stream_config)[0]
-        if result_label is None:
+        results = self._matcher.classify(frame, state.stream_config,
+                                         True)
+        if len(results) != 1:
             # misclassified, save screenshot
             filename = "{}_{}.png".format(
                 state.stream_config.channel, state.timestamp)
@@ -34,6 +35,17 @@ class VictoryDefeatPipe(Pipe):
                 "but no result template matched")
             return {}
 
-        return {
+        result_label, position = results[0]
+
+        changes = {
             "last_match_result": MatchResult(result_label)
         }
+
+        positions = state.stream_config.template_positions.copy()
+        positions[result_label] = position
+        stream_config = evolve(
+            state.stream_config,
+            template_positions=positions)
+        changes["stream_config"] = stream_config
+
+        return changes

@@ -3,7 +3,7 @@ import logging
 
 from pipe.pipe import Pipe
 from state.game_state import Screen, Brawler
-from classifiers.multi_template_matcher import MultiTemplateMatcher
+from classifiers.template_matcher import TemplateMatcher
 
 class VersusPipe(Pipe):
     """
@@ -12,7 +12,7 @@ class VersusPipe(Pipe):
     realtime = False
 
     def __init__(self):
-        self._matcher = MultiTemplateMatcher()
+        self._matcher = TemplateMatcher()
 
     def start(self):
         self._matcher.load_templates("templates/brawler/*.png",

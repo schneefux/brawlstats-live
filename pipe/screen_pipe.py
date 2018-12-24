@@ -8,8 +8,6 @@ class ScreenPipe(Pipe):
     """
     Detect the current game view, for example the loading screen.
     """
-    realtime = True
-
     def __init__(self):
         self._matchers = dict()
         for screen in Screen:
@@ -26,6 +24,7 @@ class ScreenPipe(Pipe):
             return {}
 
         changes = {}
+        position = None
 
         # if context is completely unknown,
         # check for match start screens
@@ -33,11 +32,12 @@ class ScreenPipe(Pipe):
             matchers = [self._matchers[screen] for screen in Screen
                         if Screen.VICTORY_DEFEAT in screen.get_next()]
             for matcher in matchers:
-                screen_label, position = matcher.classify(
-                    frame, state.stream_config)
+                matches = matcher.classify(
+                    frame, state.stream_config, True)
 
-                if screen_label is not None:
+                if len(matches) > 0:
                     # match
+                    screen_label, position = matches[0]
                     screen = Screen[screen_label.upper()]
                     changes = {
                         "current_screen": screen,
@@ -47,31 +47,25 @@ class ScreenPipe(Pipe):
 
         # check if it's the same screen
         elif state.current_screen is not None:
-            screen_label, position = \
-                self._matchers[state.current_screen]\
-                .classify(frame, state.stream_config)
+            matches = self._matchers[state.current_screen]\
+                .classify(frame, state.stream_config, True)
 
-            if screen_label is None:
+            if len(matches) == 0:
                 # current: unknown, previous = current
                 changes = {
                     "current_screen": None,
                     "last_known_screen": state.current_screen
                 }
-            elif screen_label != state.current_screen.name.lower():
-                # match
-                screen = Screen[screen_label.upper()]
-                changes = {
-                    "current_screen": screen,
-                    "last_known_screen": screen
-                }
+            # else it must still be the same
 
         # check if it's one of the next screens
         elif state.last_known_screen is not None:
             for screen in state.last_known_screen.get_next():
-                screen_label, position = self._matchers[screen]\
-                    .classify(frame, state.stream_config)
-                if screen_label is not None:
+                matches = self._matchers[screen]\
+                    .classify(frame, state.stream_config, True)
+                if len(matches) > 0:
                     # match
+                    screen_label, position = matches[0]
                     screen = Screen[screen_label.upper()]
                     changes = {
                         "current_screen": screen,

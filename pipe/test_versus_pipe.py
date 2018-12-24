@@ -7,24 +7,36 @@ from state.game_state import GameState, Screen, Brawler
 from state.stream_config import StreamConfig
 from pipe.versus_pipe import VersusPipe
 
-def assert_lists_same(list1, list2):
-    assert all([x in list2 for x in list1])
-    assert all([x in list1 for x in list2])
-
-def test_should_recognize_teams():
+def test_should_place_into_teams():
     stream_config = StreamConfig(resolution=480,
                                  screen_box=((0, 0), (852, 480)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VERSUS)
     pipe = VersusPipe()
     pipe.start()
+    result = [
+        ('colt', (14, 359)), ('shelly', (333, 110)),
+        ('tara', (19, 488)), ('tara', (334, 369)),
+        ('mortis', (17, 617)), ('mortis', (332, 241))]
+    pipe._matcher.classify = lambda frame, config: result
 
-    image = cv2.imread(
-        "test_images/brawler/" +
-        "jessie_poco_colt_penny_barley_nita.png")
-    changes = pipe.process(image, state)
+    changes = pipe.process(None, state)
 
-    assert_lists_same(changes["red_team"],
-                      [Brawler.JESSIE, Brawler.POCO, Brawler.COLT])
-    assert_lists_same(changes["blue_team"],
-                      [Brawler.PENNY, Brawler.BARLEY, Brawler.NITA])
+    assert set(changes["red_team"]) == set([
+        Brawler.COLT, Brawler.TARA, Brawler.MORTIS])
+    assert set(changes["blue_team"]) == set([
+        Brawler.SHELLY, Brawler.TARA, Brawler.MORTIS])
+
+
+def test_should_noop_on_no_match():
+    stream_config = StreamConfig(resolution=480,
+                                 screen_box=((0, 0), (852, 480)))
+    state = GameState(stream_config=stream_config,
+                      current_screen=Screen.VERSUS)
+    pipe = VersusPipe()
+    pipe.start()
+    pipe._matcher.classify = lambda frame, config: []
+
+    changes = pipe.process(None, state)
+
+    assert changes == {}
