@@ -50,10 +50,6 @@ class TemplateMatcher(object):
                 template_image=template_image,
                 target_resolution=gray_frame.shape[0])
 
-            if template.image.shape[0] > gray_frame.shape[0] or \
-                    template.image.shape[1] > gray_frame.shape[1]:
-                continue
-
             template_position = stream_config.template_positions.get(
                 template.template_image.label)
 
@@ -65,6 +61,10 @@ class TemplateMatcher(object):
                 gray_frame = gray_frame[y:y+h, x:x+w]
             else:
                 template_position = (0, 0)
+
+            if template.image.shape[0] > gray_frame.shape[0] or \
+                    template.image.shape[1] > gray_frame.shape[1]:
+                continue
 
             correlation_map = cv2.matchTemplate(
                 gray_frame, template.image, cv2.TM_CCOEFF_NORMED)
