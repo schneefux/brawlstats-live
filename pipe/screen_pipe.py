@@ -29,8 +29,9 @@ class ScreenPipe(Pipe):
         # if context is completely unknown,
         # check for match start screens
         if state.last_known_screen is None:
-            matchers = [self._matchers[screen] for screen in Screen
-                        if Screen.VICTORY_DEFEAT in screen.get_next()]
+            matchers = [self._matchers[screen] for screen in [
+                Screen.MAIN_MENU, Screen.LOADING, Screen.QUEUE
+            ]]
             for matcher in matchers:
                 matches = matcher.classify(
                     frame, state.stream_config, True)
@@ -59,8 +60,13 @@ class ScreenPipe(Pipe):
             # else it must still be the same
 
         # check if it's one of the next screens
+        # or one of the ones after
         elif state.last_known_screen is not None:
-            for screen in state.last_known_screen.get_next():
+            next_screens = state.last_known_screen.get_next()
+            next2_screens = [screen
+                             for next_screen in next_screens
+                             for screen in next_screen.get_next()]
+            for screen in set(next_screens + next2_screens):
                 matches = self._matchers[screen]\
                     .classify(frame, state.stream_config, True)
                 if len(matches) > 0:

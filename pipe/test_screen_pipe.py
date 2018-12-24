@@ -17,8 +17,9 @@ def test_should_search_start_and_find_none():
     pipe = ScreenPipe()
     pipe.start()
 
-    pipe._matchers[Screen.VERSUS].classify = lambda *_: []
+    pipe._matchers[Screen.MAIN_MENU].classify = lambda *_: []
     pipe._matchers[Screen.LOADING].classify = lambda *_: []
+    pipe._matchers[Screen.QUEUE].classify = lambda *_: []
 
     changes = pipe.process(None, state)
     assert changes == {}
@@ -31,14 +32,15 @@ def test_should_search_start_and_find():
     pipe = ScreenPipe()
     pipe.start()
 
-    pipe._matchers[Screen.VERSUS].classify = \
-        lambda *_: [("versus", (0, 0))]
+    pipe._matchers[Screen.MAIN_MENU].classify = \
+        lambda *_: [("main_menu", (0, 0))]
     pipe._matchers[Screen.LOADING].classify = lambda *_: []
+    pipe._matchers[Screen.QUEUE].classify = lambda *_: []
 
     changes = pipe.process(None, state)
-    assert changes["current_screen"] == Screen.VERSUS
-    assert changes["last_known_screen"] == Screen.VERSUS
-    assert changes["stream_config"].template_positions == { "versus": (0, 0) }
+    assert changes["current_screen"] == Screen.MAIN_MENU
+    assert changes["last_known_screen"] == Screen.MAIN_MENU
+    assert changes["stream_config"].template_positions == { "main_menu": (0, 0) }
 
 
 def test_should_search_same_and_find_none():
@@ -77,6 +79,7 @@ def test_should_search_next_and_find_none():
     pipe.start()
 
     pipe._matchers[Screen.VICTORY_DEFEAT].classify = lambda *_: []
+    pipe._matchers[Screen.PLAY_AGAIN].classify = lambda *_: []
 
     changes = pipe.process(None, state)
     assert changes == {}
@@ -91,6 +94,7 @@ def test_should_search_next_and_find():
 
     pipe._matchers[Screen.VICTORY_DEFEAT].classify = \
         lambda *_: [("victory_defeat", (0, 0))]
+    pipe._matchers[Screen.PLAY_AGAIN].classify = lambda *_: []
 
     changes = pipe.process(None, state)
     assert changes["current_screen"] == Screen.VICTORY_DEFEAT

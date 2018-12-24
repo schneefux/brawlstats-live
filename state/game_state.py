@@ -6,13 +6,16 @@ from state.stream_config import StreamConfig
 class Screen(Enum):
     # corresponds to templates/screen/{name.lower()}.png
     MAIN_MENU = {
-        "next": ("battle_log", "loading")
+        "next": ("battle_log", "queue")
     }
     BATTLE_LOG = {
         "next": ("main_menu", )
     }
+    QUEUE = {
+        "next": ("loading", )
+    }
     LOADING = {
-        "next": ("main_menu", "versus", "victory_defeat")
+        "next": ("main_menu", "versus")
     }
     VERSUS = {
         "next": ("victory_defeat", )
@@ -21,11 +24,11 @@ class Screen(Enum):
         "next": ("play_again", )
     }
     PLAY_AGAIN = {
-        "next": ("loading", "main_menu")
+        "next": ("queue", "loading")
     }
 
     def get_next(self):
-        return (Screen[n.upper()] for n in self.value["next"])
+        return [Screen[n.upper()] for n in self.value["next"]]
 
 @unique
 class MatchResult(Enum):

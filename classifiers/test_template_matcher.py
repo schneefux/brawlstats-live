@@ -43,6 +43,8 @@ def image(name):
     #("versus_frank_poco_nita_jessie_nita_pam", "versus"),
     ("versus_shelly_bull_barley_nita_poco_penny", "versus"),
     #("loading_1", "loading"),
+    ("queue_1", "queue"),
+    #("queue_2", "queue"),
     #("main-menu_1", "main_menu"),
     ("ingame_1", None),
     ("ingame_2", None),
