@@ -23,13 +23,14 @@ def test_should_classify_result():
     assert changes["stream_config"].template_positions == { "victory": (0, 0) }
 
 
-def test_should_noop_on_no_match():
+def test_should_noop_on_no_match(monkeypatch):
     stream_config = StreamConfig(resolution=480,
                                  screen_box=((0, 0), (852, 480)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VICTORY_DEFEAT)
     pipe = VictoryDefeatPipe()
     pipe.start()
+    monkeypatch.setattr(cv2, "imwrite", lambda *_: None)
     pipe._matcher.classify = lambda *_: []
 
     changes = pipe.process(None, state)

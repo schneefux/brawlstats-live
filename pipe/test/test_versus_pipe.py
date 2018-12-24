@@ -18,7 +18,7 @@ def test_should_place_into_teams():
         ('colt', (14, 359)), ('shelly', (333, 110)),
         ('tara', (19, 488)), ('tara', (334, 369)),
         ('mortis', (17, 617)), ('mortis', (332, 241))]
-    pipe._matcher.classify = lambda frame, config: result
+    pipe._matcher.classify = lambda *_: result
 
     changes = pipe.process(None, state)
 
@@ -28,14 +28,15 @@ def test_should_place_into_teams():
         Brawler.SHELLY, Brawler.TARA, Brawler.MORTIS])
 
 
-def test_should_noop_on_no_match():
+def test_should_noop_on_no_match(monkeypatch):
     stream_config = StreamConfig(resolution=480,
                                  screen_box=((0, 0), (852, 480)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VERSUS)
     pipe = VersusPipe()
     pipe.start()
-    pipe._matcher.classify = lambda frame, config: []
+    monkeypatch.setattr(cv2, "imwrite", lambda *_: None)
+    pipe._matcher.classify = lambda *_: []
 
     changes = pipe.process(None, state)
 
