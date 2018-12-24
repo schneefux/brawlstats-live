@@ -50,6 +50,7 @@ class Brawler(Enum):
     LEON     = "leon"
     MORTIS   = "mortis"
     NITA     = "nita"
+    PAM      = "pam"
     PENNY    = "penny"
     POCO     = "poco"
     RICOCHET = "ricochet"
