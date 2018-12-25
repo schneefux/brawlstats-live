@@ -28,17 +28,21 @@ class StreamWatcher(object):
         self.state = GameState(stream_config=stream_config)
         self._stream = stream
         self._fps = config.max_fps
-        self._running = True
         self._realtime_pipeline.start()
         self._deferred_pipeline.start()
         self._tick()
 
     def stop(self):
-        self._running = False
-        self._timer.cancel()
+        if self.running:
+            self._timer.cancel()
+            self._stream.stop()
+
+    @property
+    def running(self):
+        return self._stream.running
 
     def _tick(self):
-        if not self._running:
+        if not self._stream.running:
             return
 
         start_time = time.time()

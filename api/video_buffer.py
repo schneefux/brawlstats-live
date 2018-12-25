@@ -8,10 +8,13 @@ class VideoBuffer(object):
     """
     Buffer a stream using ffmpeg, yielding every nth frame.
     """
+    def __init__(self):
+        self.running = False
+
     def start(self, stream, fps):
+        self.running = True
         self._fps = fps
         self._frame = None
-        self._running = True
         self._create_pipe(stream)
 
     def _create_pipe(self, stream):
@@ -47,11 +50,12 @@ class VideoBuffer(object):
         self._frame = self._tick()
 
     def stop(self):
-        self._pipe.terminate()
-        self._running = False
+        if self.running:
+            self._pipe.terminate()
+        self.running = False
 
     def _tick(self):
-        if not self._running:
+        if not self.running:
             return
 
         self._timer = Timer(1.0/self._fps, self._tick)
@@ -60,6 +64,10 @@ class VideoBuffer(object):
 
         raw_image = self._pipe.stdout.read(
             self._byte_length * self._byte_width * 3)
+        if len(raw_image) == 0:
+            self.running = False
+            return
+
         self._frame = np.fromstring(raw_image, dtype="uint8")\
             .reshape((self._byte_width, self._byte_length, 3))
 

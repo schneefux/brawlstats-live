@@ -28,7 +28,7 @@ watcher.start(stream, config, stream_config)
 
 logging.info("Watching %s's channel", channel)
 
-while True:
+while watcher.running:
     frame = stream.get_frame()
 
     box = watcher.state.stream_config.screen_box
