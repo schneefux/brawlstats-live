@@ -12,6 +12,7 @@ class TemplateImage(object):
     image = attrib()
     label = attrib()
     resolution = attrib()
+    bounding_box = attrib()
 
 
 @attrs
@@ -35,4 +36,6 @@ class Template(object):
                            interpolation=cv2.INTER_AREA)
         return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-
+    @property
+    def bounding_box(self):
+        return self.template_image.bounding_box

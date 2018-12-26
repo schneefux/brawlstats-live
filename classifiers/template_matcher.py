@@ -4,6 +4,7 @@
 import os
 import cv2
 import glob
+import json
 import time
 import numpy as np
 from math import sqrt
@@ -26,11 +27,22 @@ class TemplateMatcher(object):
                             path_glob)
 
         for path in paths:
-            name = os.path.basename(os.path.splitext(path)[0])
+            path_no_ext = os.path.splitext(path)[0]
+            name = os.path.basename(path_no_ext)
+            json_path = path_no_ext + ".json"
+            bounding_box = None
+
+            if os.path.isfile(json_path):
+                with open(json_path, "r") as json_file:
+                    box = json.load(json_file)
+                    bounding_box = ((box["x1"], box["y1"]),
+                                    (box["x2"], box["y2"]))
+
             self.template_images.append(
                 TemplateImage(image=cv2.imread(path),
                               label=name,
-                              resolution=resolution))
+                              resolution=resolution,
+                              bounding_box=bounding_box))
 
     def classify(self, frame, stream_config,
                  break_after_first_match=False):
@@ -53,21 +65,31 @@ class TemplateMatcher(object):
             template_position = stream_config.template_positions.get(
                 template.template_image.label)
 
+            query_frame = gray_frame
+
             if template_position is not None:
                 # cut out box where template is expected
                 h, w = template.image.shape
                 x = max(template_position[0] - screen_box[0][0], 0)
                 y = max(template_position[1] - screen_box[0][1], 0)
-                gray_frame = gray_frame[y:y+h, x:x+w]
+                query_frame = gray_frame[y:y+h, x:x+w]
             else:
                 template_position = (0, 0)
 
-            if template.image.shape[0] > gray_frame.shape[0] or \
-                    template.image.shape[1] > gray_frame.shape[1]:
+                box = template.bounding_box
+                if box is not None:
+                    x1 = int(box[0][0] * gray_frame.shape[1])
+                    y1 = int(box[0][1] * gray_frame.shape[0])
+                    x2 = int(box[1][0] * gray_frame.shape[1])
+                    y2 = int(box[1][1] * gray_frame.shape[0])
+                    query_frame = gray_frame[y1:y2, x1:x2]
+
+            if template.image.shape[0] > query_frame.shape[0] or \
+                    template.image.shape[1] > query_frame.shape[1]:
                 continue
 
             correlation_map = cv2.matchTemplate(
-                gray_frame, template.image, cv2.TM_CCOEFF_NORMED)
+                query_frame, template.image, cv2.TM_CCOEFF_NORMED)
             positions = np.where(
                 correlation_map > self.min_match_confidence)
 
