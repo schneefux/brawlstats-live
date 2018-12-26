@@ -13,14 +13,14 @@ class VideoBuffer(object):
         self.buffer_seconds = buffer_seconds
         self.running = False
 
-    def start(self, stream, fps):
+    def start(self, stream, fps, resolution):
         self.running = True
         self._fps = fps
         self._last_frame = None
         self._buffer = Queue(self._fps * self.buffer_seconds)
-        self._create_pipe(stream)
+        self._create_pipe(stream, resolution)
 
-    def _create_pipe(self, stream):
+    def _create_pipe(self, stream, resolution):
         probe_pipe = subprocess.Popen([
             "ffprobe", stream.url,
                        "-v", "error",
@@ -36,13 +36,20 @@ class VideoBuffer(object):
         )
         probe_pipe.terminate()
 
-        self._byte_length = video_info["width"]
-        self._byte_width  = video_info["height"]
+        if resolution != video_info["height"]:
+            # rescale preserving aspect ratio
+            ratio = resolution / float(video_info["height"])
+            self._byte_length = int(video_info["width"] * ratio)
+            self._byte_width = resolution
+        else:
+            self._byte_length = video_info["width"]
+            self._byte_width  = video_info["height"]
 
         self._pipe = subprocess.Popen([
             "ffmpeg", "-i", stream.url,
                       "-loglevel", "quiet", # no text output
                       "-an", # disable audio
+                      "-vf", "scale=-1:" + str(resolution),
                       "-f", "image2pipe",
                       "-pix_fmt", "bgr24",
                       "-r", str(self._fps),

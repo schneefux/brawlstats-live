@@ -19,8 +19,9 @@ class TwitchAPIClient(object):
                          headers=self._twitch_headers)
         return [data["user_name"] for data in r.json()["data"]]
 
-    def get_stream(self, channel_name, resolution=None):
-        resolution_p = "{}p".format(resolution)
+    def get_stream(self, channel_name,
+                   preferred_resolution=None):
+        resolution_p = "{}p".format(preferred_resolution)
         try:
             streams = streamlink.streams(
                 "https://www.twitch.tv/" + channel_name)
@@ -29,4 +30,4 @@ class TwitchAPIClient(object):
         if resolution_p in streams:
             return streams[resolution_p]
         else:
-            return None
+            return streams["best"]

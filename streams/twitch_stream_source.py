@@ -16,22 +16,14 @@ class TwitchStreamSource(StreamSource):
               channel_name=None):
         game_id = self._twitch.get_game_id(game_name)
 
-        if channel_name is None:
-            channels = self._twitch.get_live_channel_names(game_id)
-            random.shuffle(channels)
-        else:
-            channels = [channel_name]
+        channel_name = channel_name or random.choice(
+            self._twitch.get_live_channel_names(game_id))
 
-        for channel in channels:
-            stream = self._twitch.get_stream(channel,
-                                             stream_resolution)
-            if stream is not None:
-                break
-        else:
-            return None
+        stream = self._twitch.get_stream(channel_name,
+                                         stream_resolution)
 
-        self._stream.start(stream, fps)
-        return channel
+        self._stream.start(stream, fps, stream_resolution)
+        return channel_name
 
     def stop(self):
         self._stream.stop()
