@@ -55,6 +55,7 @@ class Brawler(Enum):
     NITA     = "nita"
     PAM      = "pam"
     PENNY    = "penny"
+    PIPER    = "piper"
     POCO     = "poco"
     RICOCHET = "ricochet"
     SHELLY   = "shelly"
