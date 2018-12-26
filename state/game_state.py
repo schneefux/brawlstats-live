@@ -45,6 +45,7 @@ class Brawler(Enum):
     BROCK    = "brock"
     BULL     = "bull"
     COLT     = "colt"
+    CROW     = "crow"
     DARRYL   = "darryl"
     DYNAMIKE = "dynamike"
     EL_PRIMO = "el_primo"
