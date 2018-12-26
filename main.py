@@ -44,7 +44,8 @@ while watcher.running:
     if key == 32:
         # space: screenshot
         filename = "{}_{}.png".format(channel, int(time.time()))
-        cv2.imwrite(filename, frame)
+        cv2.imwrite(filename,
+                    frame[box[0][1]:box[1][1], box[0][0]:box[1][0]])
 
 watcher.stop()
 stream.stop()
