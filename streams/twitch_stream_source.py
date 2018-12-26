@@ -8,9 +8,9 @@ class TwitchStreamSource(StreamSource):
     """
     Twitch buffered stream source.
     """
-    def __init__(self, twitch_client_id):
+    def __init__(self, twitch_client_id, buffer_seconds):
         self._twitch = TwitchAPIClient(twitch_client_id)
-        self._stream = VideoBuffer()
+        self._stream = VideoBuffer(buffer_seconds)
 
     def start(self, game_name, stream_resolution, fps,
               channel_name=None):
