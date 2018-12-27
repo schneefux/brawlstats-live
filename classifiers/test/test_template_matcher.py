@@ -90,7 +90,7 @@ def image(name):
 def test_screen(name, label):
     labels = [label] if label is not None else []
     assert [r[0] for r in matcher("screen")\
-        .classify(*image(name))] == labels
+        .classify(*image(name), True)] == labels
 
 
 @pytest.mark.parametrize("name,label", [
@@ -109,7 +109,7 @@ def test_screen(name, label):
 ])
 def test_victory_defeat(name, label):
     assert [r[0] for r in matcher("victory_defeat")\
-        .classify(*image(name))] == [label]
+        .classify(*image(name), True)] == [label]
 
 
 @pytest.mark.parametrize("name,labels", [

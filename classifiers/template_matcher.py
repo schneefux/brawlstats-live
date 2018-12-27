@@ -47,7 +47,7 @@ class TemplateMatcher(object):
                               bounding_box=bounding_box))
 
     def classify(self, frame, stream_config,
-                 break_after_first_match=False):
+                 only_first_match=False):
         """
         Given a frame, return a list of name, position tuples
         of matching templates.
@@ -113,7 +113,7 @@ class TemplateMatcher(object):
                 else:
                     matches.append((template.template_image.label,
                                     position_t))
-                    if break_after_first_match:
-                        break
+                    if only_first_match:
+                        return matches
 
         return matches
