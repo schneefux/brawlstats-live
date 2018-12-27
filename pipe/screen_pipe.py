@@ -17,7 +17,7 @@ class ScreenPipe(Pipe):
         for screen, matcher in self._matchers.items():
             matcher.load_templates(
                 "templates/screen/{}.png".format(screen.name.lower()),
-                1080)
+                1920, 1080)
 
     def process(self, frame, state):
         if state.stream_config.screen_box is None:

@@ -9,7 +9,7 @@ from classifiers.template_matcher import TemplateMatcher
 def matcher(folder):
     matcher = TemplateMatcher()
     matcher.load_templates("templates/{}/*.png".format(folder),
-                           1080)
+                           1920, 1080)
     return matcher
 
 if __name__ == "__main__":
@@ -27,4 +27,3 @@ if __name__ == "__main__":
             .classify(frame, stream_config)]
         print("{} shows screen {} with {} and {}!".format(
             path, screen_labels, result_labels, brawler_labels))
-        print(matcher("brawler").classify(frame, stream_config))

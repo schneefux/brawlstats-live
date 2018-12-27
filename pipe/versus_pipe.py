@@ -16,7 +16,7 @@ class VersusPipe(Pipe):
 
     def start(self):
         self._matcher.load_templates("templates/brawler/*.png",
-                                     1080)
+                                     1920, 1080)
 
     def process(self, frame, state):
         if state.current_screen != Screen.VERSUS or \

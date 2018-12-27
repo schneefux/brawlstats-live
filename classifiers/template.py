@@ -11,7 +11,8 @@ class TemplateImage(object):
     """
     image = attrib()
     label = attrib()
-    resolution = attrib()
+    screen_width = attrib()
+    screen_height = attrib()
     bounding_box = attrib()
 
 
@@ -24,13 +25,18 @@ class Template(object):
     image = attrib()
 
     @classmethod
-    def from_template_image(cls, template_image, target_resolution):
-        image = cls._resized_image(template_image, target_resolution)
+    def from_template_image(cls, template_image,
+                            target_width, target_height):
+        image = cls._resized_image(template_image,
+                                   target_width, target_height)
         return cls(template_image=template_image, image=image)
 
     @staticmethod
-    def _resized_image(template_image, target_resolution):
-        factor = float(target_resolution) / float(template_image.resolution)
+    def _resized_image(template_image,
+                       target_width, target_height):
+        factor = min(
+            target_width / float(template_image.screen_width),
+            target_height / float(template_image.screen_height))
         image = cv2.resize(template_image.image, None,
                            fx=factor, fy=factor,
                            interpolation=cv2.INTER_AREA)

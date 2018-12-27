@@ -15,11 +15,12 @@ class TemplateMatcher(object):
     """
     Compare template images to a frame and return the matches.
     """
-    min_match_confidence = 0.70
+    min_match_confidence = 0.85
     # minimum distance two matches need to have
     offset_tolerance = 15
 
-    def load_templates(self, path_glob, resolution):
+    def load_templates(self, path_glob,
+                       screen_width, screen_height):
         self.template_images = []
         paths = glob.glob(path_glob)
         if len(paths) == 0:
@@ -41,7 +42,8 @@ class TemplateMatcher(object):
             self.template_images.append(
                 TemplateImage(image=cv2.imread(path),
                               label=name,
-                              resolution=resolution,
+                              screen_width=screen_width,
+                              screen_height=screen_height,
                               bounding_box=bounding_box))
 
     def classify(self, frame, stream_config,
@@ -60,7 +62,8 @@ class TemplateMatcher(object):
         for template_image in self.template_images:
             template = Template.from_template_image(
                 template_image=template_image,
-                target_resolution=gray_frame.shape[0])
+                target_height=gray_frame.shape[0],
+                target_width=gray_frame.shape[1])
 
             template_position = stream_config.template_positions.get(
                 template.template_image.label)
