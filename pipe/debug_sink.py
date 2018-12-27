@@ -19,17 +19,15 @@ class DebugSink(Sink):
             self._durations = self._durations[1:]
 
         logging.debug(
-            "current screen: %s, last screen: %s, " +
-            "last match: %s, blue: %s, red: %s, " +
-            "fps: %2.2f, last frame: %2.2fs",
-
-            state.current_screen,
-            state.last_known_screen,
-            state.last_match_result,
-            ",".join([b.name for b in state.blue_team]),
-            ",".join([b.name for b in state.red_team]),
-            len(self._durations) / sum(self._durations),
-            duration
+            "screen: %s (last: %s, result: %s), " +
+            "%s vs. %s, " +
+            "%2.2f max fps",
+            state.current_screen or "unknown",
+            state.last_known_screen or "unknown",
+            state.last_match_result or "unknown",
+            ",".join([b.name for b in state.blue_team]) or "unknown",
+            ",".join([b.name for b in state.red_team]) or "unknown",
+            len(self._durations) / sum(self._durations)
         )
 
         return {}
