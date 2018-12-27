@@ -24,10 +24,10 @@ class StreamWatcher(object):
             VictoryDefeatPipe(),
             DebugSink()))
 
-    def start(self, stream, config, stream_config):
+    def start(self, stream, max_fps, stream_config):
         self.state = GameState(stream_config=stream_config)
         self._stream = stream
-        self._fps = config.max_fps
+        self._fps = max_fps
         self._realtime_pipeline.start()
         self._deferred_pipeline.start()
         self._tick()
@@ -46,7 +46,7 @@ class StreamWatcher(object):
             return
 
         start_time = time.time()
-        frame = self._stream.get_frame()
+        frame = self._stream.read()
 
         # get any changes from previous tick
         changes = self._deferred_pipeline.get_change()

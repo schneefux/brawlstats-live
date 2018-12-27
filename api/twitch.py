@@ -13,10 +13,13 @@ class TwitchAPIClient(object):
              headers=self._twitch_headers)
         return r.json()["data"][0]["id"]
 
-    def get_live_channel_names(self, game_id):
-        r = requests.get("https://api.twitch.tv/helix/streams" +
-                         "?first=10&language=en&game_id=" + game_id,
-                         headers=self._twitch_headers)
+    def get_live_channel_names(self, game_id, limit=10):
+        r = requests.get("https://api.twitch.tv/helix/streams",
+                         params={
+                             "first": limit,
+                             "language": "en",
+                             "game_id": game_id
+                         }, headers=self._twitch_headers)
         return [data["user_name"] for data in r.json()["data"]]
 
     def get_stream(self, channel_name,
@@ -30,4 +33,5 @@ class TwitchAPIClient(object):
         if resolution_p in streams:
             return streams[resolution_p]
         else:
+            print(streams.keys())
             return streams["best"]

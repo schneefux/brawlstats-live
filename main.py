@@ -1,35 +1,39 @@
 #!/usr/bin/env python3
-
 import cv2
 import sys
 import time
 import config
+import random
 import logging
-import numpy as np
 
-from state.stream_config import StreamConfig
-from streams.twitch_stream_source import TwitchStreamSource
+from api.twitch import TwitchAPIClient
+from api.video_buffer import VideoBuffer
 from stream_watcher import StreamWatcher
+from state.stream_config import StreamConfig
 
 logging.basicConfig(level=logging.DEBUG)
 
-stream = TwitchStreamSource(config.client_id, config.buffer_seconds)
-channel = sys.argv[1] if len(sys.argv) > 1 else None
-channel = stream.start("Brawl Stars",
-                       config.stream_resolution,
-                       config.max_ui_fps,
-                       channel)
+twitch = TwitchAPIClient(config.client_id)
+
+brawl_star_id = twitch.get_game_id("Brawl Stars")
+channels = twitch.get_live_channel_names(brawl_star_id)
+channel = sys.argv[1] if len(sys.argv) > 1 \
+    else random.choice(channels)
+
+stream = twitch.get_stream(channel, config.stream_resolution)
+buffer = VideoBuffer(config.buffer_seconds)
+buffer.start(stream, config.max_ui_fps, config.stream_resolution)
 
 stream_config = StreamConfig(resolution=config.stream_resolution,
                              channel=channel)
 
 watcher = StreamWatcher()
-watcher.start(stream, config, stream_config)
+watcher.start(buffer, config.max_fps, stream_config)
 
 logging.info("Watching %s's channel", channel)
 
 while watcher.running:
-    frame = stream.get_frame()
+    frame = buffer.read()
 
     box = watcher.state.stream_config.screen_box
     if box is not None:
