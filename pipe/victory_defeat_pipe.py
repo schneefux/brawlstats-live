@@ -3,7 +3,8 @@ import logging
 from attr import evolve
 
 from pipe.pipe import Pipe
-from state.game_state import MatchResult, Screen
+from state.screen import Screen
+from state.match_result import MatchResult
 from classifiers.template_matcher import TemplateMatcher
 
 class VictoryDefeatPipe(Pipe):

@@ -1,0 +1,27 @@
+from enum import Enum, unique
+
+@unique
+class Brawler(Enum):
+    BARLEY   = "barley"
+    BO       = "bo"
+    BROCK    = "brock"
+    BULL     = "bull"
+    COLT     = "colt"
+    CROW     = "crow"
+    DARRYL   = "darryl"
+    DYNAMIKE = "dynamike"
+    EL_PRIMO = "el_primo"
+    FRANK    = "frank"
+    JESSIE   = "jessie"
+    LEON     = "leon"
+    MORTIS   = "mortis"
+    NITA     = "nita"
+    PAM      = "pam"
+    PENNY    = "penny"
+    PIPER    = "piper"
+    POCO     = "poco"
+    RICOCHET = "ricochet"
+    SHELLY   = "shelly"
+    SPIKE    = "spike"
+    TARA     = "tara"
+    BOSS_ROBOT = "boss_robot"

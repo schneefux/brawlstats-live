@@ -2,7 +2,8 @@ import cv2
 import logging
 
 from pipe.pipe import Pipe
-from state.game_state import Screen, Brawler
+from state.screen import Screen
+from state.brawler import Brawler
 from classifiers.template_matcher import TemplateMatcher
 
 class VersusPipe(Pipe):
