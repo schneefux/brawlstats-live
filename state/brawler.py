@@ -24,4 +24,4 @@ class Brawler(Enum):
     SHELLY   = "shelly"
     SPIKE    = "spike"
     TARA     = "tara"
-    BOSS_ROBOT = "boss_robot"
+    ROBOTS   = "robots"
