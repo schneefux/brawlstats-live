@@ -52,5 +52,4 @@ while watcher.running:
                     frame[box[0][1]:box[1][1], box[0][0]:box[1][0]])
 
 watcher.stop()
-stream.stop()
 cv2.destroyAllWindows()
