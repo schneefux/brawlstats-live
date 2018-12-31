@@ -5,15 +5,19 @@ class Screen(Enum):
     # corresponds to templates/screen/{name.lower()}.png
     MAIN_MENU = {
         "id": "main_menu",
-        "next": ("battle_log", "choose_event", "queue")
+        "next": ("main_menu_team", "battle_log", "choose_event", "queue")
+    }
+    MAIN_MENU_TEAM = {
+        "id": "main_menu_team",
+        "next": ("main_menu", "battle_log", "choose_event", "queue")
     }
     BATTLE_LOG = {
         "id": "battle_log",
-        "next": ("main_menu", )
+        "next": ("main_menu", "main_menu_team")
     }
     CHOOSE_EVENT = {
         "id": "choose_event",
-        "next": ("main_menu", )
+        "next": ("main_menu", "main_menu_team")
     }
     QUEUE = {
         "id": "queue",
@@ -21,7 +25,7 @@ class Screen(Enum):
     }
     LOADING = {
         "id": "loading",
-        "next": ("main_menu", "versus")
+        "next": ("main_menu", "main_menu_team", "versus")
     }
     VERSUS = {
         "id": "versus",

@@ -48,9 +48,9 @@ def image(name):
     ("main-menu_1", "main_menu"),
     #("main-menu_2", "main_menu"), # bad quality
     #("main-menu_3", "main_menu"), # bad quality
-    #("main-menu-team_1", "main_menu_team"), # no template
-    #("main-menu-team_2", "main_menu_team"), # no template
-    #("main-menu-team_3", "main_menu_team"), # no template
+    #("main-menu-team_1", "main_menu_team"), # ?
+    ("main-menu-team_2", "main_menu_team"),
+    ("main-menu-team_3", "main_menu_team"),
     #("play-again_1", "play_again"), # skewed
     ("play-again_2", "play_again"), # bad quality
     #("play-again_3", "play_again"), # bad quality
