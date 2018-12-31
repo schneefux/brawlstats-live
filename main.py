@@ -21,6 +21,10 @@ channel = sys.argv[1] if len(sys.argv) > 1 \
     else random.choice(channels)
 
 stream = twitch.get_stream(channel, config.stream_resolution)
+if stream is None:
+    logging.error("Twitch stream is invalid")
+    sys.exit(1)
+
 buffer = VideoBuffer(config.buffer_seconds)
 buffer.start(stream, config.max_ui_fps, config.stream_resolution)
 

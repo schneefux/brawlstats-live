@@ -1,3 +1,4 @@
+import logging
 import requests
 import streamlink
 
@@ -29,9 +30,18 @@ class TwitchAPIClient(object):
             streams = streamlink.streams(
                 "https://www.twitch.tv/" + channel_name)
         except streamlink.exceptions.NoPluginError as err:
+            logging.error(err)
+            return None
+        except streamlink.exceptions.PluginError as err:
+            logging.error(err)
             return None
         if resolution_p in streams:
             return streams[resolution_p]
         else:
-            print(streams.keys())
-            return streams["best"]
+            logging.warning("configured resolution does not exist," +
+                "scaling down best")
+            if "best" in streams:
+                return streams["best"]
+            else:
+                logging.error("'best' resolution does not exist")
+                return None
