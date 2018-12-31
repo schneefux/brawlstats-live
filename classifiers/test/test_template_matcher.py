@@ -28,7 +28,7 @@ def image(name):
 
 
 @pytest.mark.parametrize("name,label", [
-    #("chest_1", "chest"), # no template
+    ("chest_1", "chest"),
     ("choose-event_1", "choose_event"),
     ("defeat_1", "victory_defeat"),
     #("defeat_2", "victory_defeat"), # bad quality
