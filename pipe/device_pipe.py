@@ -26,14 +26,16 @@ class DevicePipe(Pipe):
             return {}
 
         diff = cv2.absdiff(gray_frame, self._last_frame)
-        if diff.sum() == 0:
-            return {}
+        total_pixels   = diff.shape[0] * diff.shape[1]
+        changed_pixels = np.count_nonzero(diff)
+        changed_ratio  = float(changed_pixels) / total_pixels
 
         # 0 for same pixels, 255 for changed pixels
         mask = cv2.threshold(diff, 1, 255, cv2.THRESH_BINARY)[1]
 
-        # slow decay
-        cv2.accumulateWeighted(mask, self._movement_map, self.decay)
+        # more pixels changed -> assign a stronger weight
+        cv2.accumulateWeighted(
+                mask, self._movement_map, changed_ratio * self.decay)
 
         # convert frame of floats to 1 channel gray
         movement_frame = cv2.convertScaleAbs(
@@ -43,13 +45,13 @@ class DevicePipe(Pipe):
         # smoothen for better contour performance
         movement_frame = cv2.blur(
             movement_frame, (int(gray_frame.shape[0]/10),
-                             int(gray_frame.shape[1]/10)))
+                             int(gray_frame.shape[1]/5)))
 
         movement_frame = cv2.threshold(
             movement_frame,
             0, 255,
             cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        # TODO try edge detection
+
         contours = cv2.findContours(
             movement_frame,
             cv2.RETR_EXTERNAL, # only match parent contours
