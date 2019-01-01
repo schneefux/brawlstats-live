@@ -4,8 +4,8 @@ import cv2
 import glob
 
 from state.game_state import GameState
-from state.screen import Screen
-from state.match_result import MatchResult
+from state.enum.screen import Screen
+from state.enum.match_result import MatchResult
 from state.stream_config import StreamConfig
 from pipe.victory_defeat_pipe import VictoryDefeatPipe
 

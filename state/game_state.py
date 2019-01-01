@@ -1,6 +1,6 @@
 from attr import attrs, attrib
-from state.screen import Screen
-from state.match_result import MatchResult
+from state.enum.screen import Screen
+from state.enum.match_result import MatchResult
 from state.stream_config import StreamConfig
 
 @attrs(frozen=True)

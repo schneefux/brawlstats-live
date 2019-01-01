@@ -1,7 +1,7 @@
 from attr import evolve
 
 from pipe.pipe import Pipe
-from state.screen import Screen
+from state.enum.screen import Screen
 from classifiers.template_matcher import TemplateMatcher
 
 class ScreenPipe(Pipe):

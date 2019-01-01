@@ -4,8 +4,8 @@ import cv2
 import glob
 
 from state.game_state import GameState
-from state.screen import Screen
-from state.brawler import Brawler
+from state.enum.screen import Screen
+from state.enum.brawler import Brawler
 from state.stream_config import StreamConfig
 from pipe.versus_pipe import VersusPipe
 
