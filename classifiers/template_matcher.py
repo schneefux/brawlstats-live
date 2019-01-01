@@ -15,7 +15,7 @@ class TemplateMatcher(object):
     """
     Compare template images to a frame and return the matches.
     """
-    min_match_confidence = 0.85
+    min_match_confidence = 0.7
     # minimum distance two matches need to have
     offset_tolerance = 15
 

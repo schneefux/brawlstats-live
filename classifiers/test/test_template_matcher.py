@@ -31,7 +31,7 @@ def image(name):
     ("chest_1", "chest"),
     ("choose-event_1", "choose_event"),
     ("defeat_1", "victory_defeat"),
-    #("defeat_2", "victory_defeat"), # bad quality
+    ("defeat_2", "victory_defeat"),
     #("defeat_3", "victory_defeat"), # skewed
     ("defeat_4", "victory_defeat"),
     ("friendslist_1", "friendslist"),
@@ -47,25 +47,25 @@ def image(name):
     ("loading_3", "loading"),
     ("main-menu_1", "main_menu"),
     #("main-menu_2", "main_menu"), # bad quality
-    #("main-menu_3", "main_menu"), # bad quality
-    #("main-menu-team_1", "main_menu_team"), # ?
+    ("main-menu_3", "main_menu"),
+    ("main-menu-team_1", "main_menu_team"),
     ("main-menu-team_2", "main_menu_team"),
     ("main-menu-team_3", "main_menu_team"),
     #("play-again_1", "play_again"), # skewed
-    ("play-again_2", "play_again"), # bad quality
-    #("play-again_3", "play_again"), # bad quality
+    ("play-again_2", "play_again"),
+    ("play-again_3", "play_again"),
     ("play-again_4", "play_again"),
     ("play-again_5", "play_again"),
     ("play-again_6", "play_again"),
     ("play-again_7", "play_again"),
-    #("play-again_8", "play_again"), # covered by text
+    ("play-again_8", "play_again"),
     #("play-again_9", "play_again"), # cut off
-    #("queue_1", "queue"), # ?
+    ("queue_1", "queue"),
     #("queue_2", "queue"), # ?
     ("queue_3", "queue"),
     #("queue_4", "queue"), # missing button
-    #("queue_5", "queue"), # covered by text
-    #("queue_6", "queue"), # covered by text
+    ("queue_5", "queue"),
+    ("queue_6", "queue"),
     #("queue_7", "queue"), # covered by icon
     ("queue_8", "queue"),
     #("queue_9", "queue"), # no button
@@ -79,6 +79,7 @@ def image(name):
     ("versus_frank-poco-nita-jessie-nita-pam", "versus"),
     ("versus_nita-shelly-crow-brock-colt-frank", "versus"),
     ("versus_shelly-bull-barley-nita-poco-penny", "versus"),
+    ("versus_nita-brock-colt-colt-ricochet-jessie", "versus"),
     ("victory_1", "victory_defeat"),
     ("victory_2", "victory_defeat"),
     ("victory_3", "victory_defeat"),
@@ -101,7 +102,7 @@ def test_screen(name, label):
     ("victory_2", "victory"),
     ("victory_3", "victory"),
     #("victory_4", "victory"), # skewed
-    #("victory_5", "victory"), ?
+    #("victory_5", "victory"), # ?
     ("rank_1", "rank"),
     ("rank_2", "rank"),
     ("rank_3", "rank_top"),
@@ -118,6 +119,7 @@ def test_victory_defeat(name, label):
     ("versus_frank-poco-nita-jessie-nita-pam", ["frank", "poco", "nita", "jessie", "nita", "pam"]),
     ("versus_shelly-bull-barley-nita-poco-penny", ["shelly", "bull", "barley", "nita", "poco", "penny"]),
     ("versus_nita-shelly-crow-brock-colt-frank", ["nita", "shelly", "crow", "brock", "colt", "frank"]),
+    ("versus_nita-brock-colt-colt-ricochet-jessie", ["nita", "brock", "colt", "colt", "ricochet", "jessie"]),
 ])
 def test_brawlers(name, labels):
     assert set(r[0] for r in matcher("brawler")\
