@@ -28,6 +28,7 @@ def image(name):
 
 
 @pytest.mark.parametrize("name,label", [
+    #("brawlers_1", "brawlers"), # cut off
     ("chest_1", "chest"),
     ("choose-event_1", "choose_event"),
     ("defeat_1", "victory_defeat"),
@@ -74,6 +75,7 @@ def image(name):
     ("rank_3", "victory_defeat"),
     ("rank_4", "victory_defeat"),
     #("rank_team_1", "victory_defeat"), # skewed
+    ("select-brawler_1", "select_brawler"),
     #("versus_colt-tara-mortis-shelly-mortis-tara", "versus"), # ?
     ("versus_frank-colt-nita-nita-tara-shelly", "versus"),
     ("versus_frank-poco-nita-jessie-nita-pam", "versus"),
