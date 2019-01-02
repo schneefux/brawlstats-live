@@ -76,7 +76,6 @@ def image(name):
     #("rank_2", "victory_defeat"), # covered by text
     ("rank_3", "victory_defeat"),
     ("rank_4", "victory_defeat"),
-    #("rank_team_1", "victory_defeat"), # skewed
     ("select-brawler_1", "select_brawler"),
     #("versus_colt-tara-mortis-shelly-mortis-tara", "versus"), # ?
     ("versus_frank-colt-nita-nita-tara-shelly", "versus"),
@@ -91,6 +90,7 @@ def image(name):
     #("victory_5", "victory_defeat"), # covered by head
     ("victory_6", "victory_defeat"),
     ("victory_7", "victory_defeat"),
+    ("victory_8", "victory_defeat"),
 ])
 def test_screen(name, label):
     labels = [label] if label is not None else []
@@ -102,11 +102,15 @@ def test_screen(name, label):
     ("defeat_1", "defeat"),
     ("defeat_2", "defeat"),
     #("defeat_3", "defeat"), # skewed
+    ("defeat_4", "defeat"),
     ("victory_1", "victory"),
     ("victory_2", "victory"),
     ("victory_3", "victory"),
     #("victory_4", "victory"), # skewed
     #("victory_5", "victory"), # ?
+    ("victory_6", "victory"),
+    ("victory_7", "victory"),
+    ("victory_8", "victory"),
     ("rank_1", "rank"),
     ("rank_2", "rank"),
     ("rank_3", "rank_top"),
