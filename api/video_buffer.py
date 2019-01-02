@@ -39,7 +39,7 @@ class VideoBuffer(object):
         if resolution != video_info["height"]:
             # rescale preserving aspect ratio
             ratio = resolution / float(video_info["height"])
-            self._byte_length = int(video_info["width"] * ratio)
+            self._byte_length = round(video_info["width"] * ratio)
             self._byte_width = resolution
         else:
             self._byte_length = video_info["width"]
