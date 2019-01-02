@@ -53,6 +53,7 @@ def image(name):
     ("main-menu-team_1", "main_menu_team"),
     ("main-menu-team_2", "main_menu_team"),
     ("main-menu-team_3", "main_menu_team"),
+    #("other_1", None), # ?
     #("play-again_1", "play_again"), # skewed
     ("play-again_2", "play_again"),
     ("play-again_3", "play_again"),
