@@ -27,10 +27,7 @@ class VictoryDefeatPipe(Pipe):
         results = self._matcher.classify(frame, state.stream_config,
                                          True)
         if len(results) != 1:
-            # misclassified, save screenshot
-            filename = "{}_{}.png".format(
-                state.stream_config.channel, state.timestamp)
-            cv2.imwrite(filename, frame)
+            # misclassified
             logging.warning(
                 "Screen was classified as victory/defeat " +
                 "but no result template matched")

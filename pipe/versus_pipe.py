@@ -27,10 +27,7 @@ class VersusPipe(Pipe):
         matches = self._matcher.classify(frame,
                                          state.stream_config)
         if len(matches) == 0:
-            # misclassified, save screenshot
-            filename = "{}_{}.png".format(
-                state.stream_config.channel, state.timestamp)
-            cv2.imwrite(filename, frame)
+            # misclassified
             logging.warning(
                 "Screen was classified as versus " +
                 "but no brawler template matched")
