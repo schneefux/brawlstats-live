@@ -30,12 +30,18 @@ class DevicePipe(Pipe):
         changed_pixels = np.count_nonzero(diff)
         changed_ratio  = float(changed_pixels) / total_pixels
 
+        if changed_pixels == 0:
+            return {}
+
         # 0 for same pixels, 255 for changed pixels
         mask = cv2.threshold(diff, 1, 255, cv2.THRESH_BINARY)[1]
 
         # more pixels changed -> assign a stronger weight
         cv2.accumulateWeighted(
                 mask, self._movement_map, changed_ratio * self.decay)
+
+        if self._movement_map.max() == 0:
+            return {}
 
         # convert frame of floats to 1 channel gray
         movement_frame = cv2.convertScaleAbs(
