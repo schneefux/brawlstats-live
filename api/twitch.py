@@ -14,7 +14,7 @@ class TwitchAPIClient(object):
              headers=self._twitch_headers)
         return r.json()["data"][0]["id"]
 
-    def get_live_channel_names(self, game_id, limit=10):
+    def get_live_channel_names(self, game_id, limit=50):
         r = requests.get("https://api.twitch.tv/helix/streams",
                          params={
                              "first": limit,
