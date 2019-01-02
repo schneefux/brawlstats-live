@@ -31,13 +31,14 @@ class TemplateMatcher(object):
             path_no_ext = os.path.splitext(path)[0]
             name = os.path.basename(path_no_ext)
             json_path = path_no_ext + ".json"
-            bounding_box = None
 
             if os.path.isfile(json_path):
                 with open(json_path, "r") as json_file:
                     box = json.load(json_file)
                     bounding_box = ((box["x1"], box["y1"]),
                                     (box["x2"], box["y2"]))
+            else:
+                bounding_box = ((0, 0), (1.0, 1.0))
 
             self.template_images.append(
                 TemplateImage(image=cv2.imread(path),
@@ -68,8 +69,6 @@ class TemplateMatcher(object):
             template_position = stream_config.template_positions.get(
                 template.template_image.label)
 
-            query_frame = gray_frame
-
             if template_position is not None:
                 # cut out box where template is expected
                 h, w = template.image.shape
@@ -80,12 +79,11 @@ class TemplateMatcher(object):
                 template_position = (0, 0)
 
                 box = template.bounding_box
-                if box is not None:
-                    x1 = int(box[0][0] * gray_frame.shape[1])
-                    y1 = int(box[0][1] * gray_frame.shape[0])
-                    x2 = int(box[1][0] * gray_frame.shape[1])
-                    y2 = int(box[1][1] * gray_frame.shape[0])
-                    query_frame = gray_frame[y1:y2, x1:x2]
+                x1 = int(box[0][0] * gray_frame.shape[1])
+                y1 = int(box[0][1] * gray_frame.shape[0])
+                x2 = int(box[1][0] * gray_frame.shape[1])
+                y2 = int(box[1][1] * gray_frame.shape[0])
+                query_frame = gray_frame[y1:y2, x1:x2]
 
             if template.image.shape[0] > query_frame.shape[0] or \
                     template.image.shape[1] > query_frame.shape[1]:
