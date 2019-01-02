@@ -32,7 +32,7 @@ class ScreenPipe(Pipe):
         if state.last_known_screen is None:
             # if context is completely unknown,
             # check for match start screens
-            next_screens = [Screen.MAIN_MENU, Screen.LOADING, Screen.QUEUE]
+            next_screens = Screen.get_first()
         else:
             # else check if it's one of the next screens
             # or one of the ones after
