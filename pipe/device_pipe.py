@@ -64,6 +64,10 @@ class DevicePipe(Pipe):
             cv2.CHAIN_APPROX_SIMPLE)[1]
 
         rects = [cv2.boundingRect(contour) for contour in contours]
+
+        if len(rects) == 0:
+            return {}
+
         # find largest area
         x1, y1, w, h = sorted(rects,
                       key=lambda rect: rect[2]*rect[3],
