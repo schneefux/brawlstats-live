@@ -23,63 +23,40 @@ class ScreenPipe(Pipe):
         if state.stream_config.screen_box is None:
             return {}
 
-        changes = {}
+        changes = {
+            "current_screen": None
+        }
         position = None
 
-        # if context is completely unknown,
-        # check for match start screens
+        next_screens = []
         if state.last_known_screen is None:
-            matchers = [self._matchers[screen] for screen in [
-                Screen.MAIN_MENU, Screen.LOADING, Screen.QUEUE
-            ]]
-            for matcher in matchers:
-                matches = matcher.classify(
-                    frame, state.stream_config, True)
-
-                if len(matches) > 0:
-                    # match
-                    screen_label, position = matches[0]
-                    screen = Screen[screen_label.upper()]
-                    changes = {
-                        "current_screen": screen,
-                        "last_known_screen": screen
-                    }
-                    break
-
-        # check if it's the same screen
-        elif state.current_screen is not None:
-            matches = self._matchers[state.current_screen]\
-                .classify(frame, state.stream_config, True)
-
-            if len(matches) == 0:
-                # current: unknown, previous = current
-                changes = {
-                    "current_screen": None,
-                    "last_known_screen": state.current_screen
-                }
-            # else it must still be the same
-
-        # check if it's one of the next screens
-        # or one of the ones after
-        elif state.last_known_screen is not None:
-            next_screens = state.last_known_screen.get_next()
+            # if context is completely unknown,
+            # check for match start screens
+            next_screens = [Screen.MAIN_MENU, Screen.LOADING, Screen.QUEUE]
+        else:
+            # else check if it's one of the next screens
+            # or one of the ones after
+            current_screens = [state.current_screen]\
+                if state.current_screen is not None else []
+            next1_screens = state.last_known_screen.get_next()
             next2_screens = [screen
                              for next_screen in next_screens
                              for screen in next_screen.get_next()]
-            for screen in set(next_screens + next2_screens):
-                matches = self._matchers[screen]\
-                    .classify(frame, state.stream_config, True)
-                if len(matches) > 0:
-                    # match
-                    screen_label, position = matches[0]
-                    screen = Screen[screen_label.upper()]
-                    changes = {
-                        "current_screen": screen,
-                        "last_known_screen": screen
-                    }
-                    break
+            next_screens = list(set(
+                current_screens + next1_screens + next2_screens))
 
-        # else: no match, changes = {}
+        for next_screen in next_screens:
+            matches = self._matchers[next_screen]\
+                .classify(frame, state.stream_config, True)
+            if len(matches) > 0:
+                # match
+                screen_label, position = matches[0]
+                screen = Screen[screen_label.upper()]
+                changes = {
+                    "current_screen": screen,
+                    "last_known_screen": screen
+                }
+                break
 
         if position is not None:
             # cache template position
