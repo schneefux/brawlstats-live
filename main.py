@@ -5,13 +5,14 @@ import time
 import config
 import random
 import logging
+import coloredlogs
 
 from api.twitch import TwitchAPIClient
 from api.video_buffer import VideoBuffer
 from stream_watcher import StreamWatcher
 from state.stream_config import StreamConfig
 
-logging.basicConfig(level=logging.DEBUG)
+coloredlogs.install(level="DEBUG")
 
 twitch = TwitchAPIClient(config.client_id)
 
