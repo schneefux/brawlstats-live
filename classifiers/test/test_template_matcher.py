@@ -42,6 +42,7 @@ def image(name):
     ("ingame_4", None),
     ("ingame_5", None),
     ("ingame_6", None),
+    ("ingame_7", None),
     ("ingame-brawlball_1", None),
     ("loading_1", "loading"),
     ("loading_2", "loading"),
@@ -65,7 +66,7 @@ def image(name):
     #("queue_2", "queue"), # ?
     ("queue_3", "queue"),
     #("queue_4", "queue"), # missing button
-    ("queue_5", "queue"),
+    #("queue_5", "queue"), # covered by text
     ("queue_6", "queue"),
     #("queue_7", "queue"), # covered by icon
     ("queue_8", "queue"),
