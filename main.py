@@ -17,12 +17,17 @@ coloredlogs.install(level="DEBUG")
 
 twitch = TwitchAPIClient(config.client_id)
 
-channel = sys.argv[1] if len(sys.argv) > 1 \
-    else random.choice(
+if len(sys.argv) > 1:
+    if sys.argv[1].startswith("http"):
+        url = sys.argv[1]
+    else:
+        url = "https://www.twitch.tv/" + sys.argv[1]
+else:
+    url = "https://www.twitch.tv/" + random.choice(
         twitch.get_live_channel_names(
             twitch.get_game_id("Brawl Stars")))
 
-streams = streamlink.streams("https://www.twitch.tv/" + channel)
+streams = streamlink.streams(url)
 stream = streams.get(str(config.stream_resolution) + "p") \
     or streams.get("best")
 if stream is None:
@@ -33,12 +38,12 @@ buffer = VideoBuffer(config.buffer_seconds)
 buffer.start(stream, config.max_ui_fps, config.stream_resolution)
 
 stream_config = StreamConfig(resolution=config.stream_resolution,
-                             channel=channel)
+                             url=url)
 
 watcher = StreamWatcher()
 watcher.start(buffer, config.max_fps, stream_config)
 
-logging.info("Watching %s's channel", channel)
+logging.info("Watching %s", url)
 
 while watcher.running:
     frame = buffer.read()
@@ -56,7 +61,7 @@ while watcher.running:
         break
     if key == 32:
         # space: screenshot
-        filename = "{}_{}.png".format(channel, int(time.time()))
+        filename = "{}.png".format(int(time.time()))
         cv2.imwrite(filename,
                     frame[box[0][1]:box[1][1], box[0][0]:box[1][0]])
 

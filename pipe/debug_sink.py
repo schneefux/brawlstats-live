@@ -28,10 +28,8 @@ class DebugSink(Sink):
                     state.current_screen.name.lower())
             if not os.path.exists(path):
                 os.makedirs(path)
-            cv2.imwrite("{}/{}_{}.jpg".format(
-                path,
-                state.stream_config.channel,
-                int(state.timestamp)), cut_frame)
+            cv2.imwrite("{}/{}.jpg".format(
+                path, int(state.timestamp)), cut_frame)
 
         logging.debug(
             "screen: %s (last: %s, result: %s), " +
