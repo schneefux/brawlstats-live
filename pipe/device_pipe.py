@@ -8,10 +8,7 @@ class DevicePipe(Pipe):
     """
     Detect the embedded game screen inside the frame.
     """
-    decay = 0.001
-
-    def __init__(self):
-        pass
+    decay = 0.01
 
     def start(self):
         self._movement_map = None
@@ -33,12 +30,9 @@ class DevicePipe(Pipe):
         if changed_pixels == 0:
             return {}
 
-        # 0 for same pixels, 255 for changed pixels
-        mask = cv2.threshold(diff, 1, 255, cv2.THRESH_BINARY)[1]
-
         # more pixels changed -> assign a stronger weight
         cv2.accumulateWeighted(
-                mask, self._movement_map, changed_ratio * self.decay)
+                diff, self._movement_map, changed_ratio * self.decay)
 
         if self._movement_map.max() == 0:
             return {}
