@@ -5,6 +5,7 @@ import time
 import config
 import random
 import logging
+import streamlink
 import coloredlogs
 
 from api.twitch import TwitchAPIClient
@@ -16,12 +17,14 @@ coloredlogs.install(level="DEBUG")
 
 twitch = TwitchAPIClient(config.client_id)
 
-brawl_star_id = twitch.get_game_id("Brawl Stars")
-channels = twitch.get_live_channel_names(brawl_star_id)
 channel = sys.argv[1] if len(sys.argv) > 1 \
-    else random.choice(channels)
+    else random.choice(
+        twitch.get_live_channel_names(
+            twitch.get_game_id("Brawl Stars")))
 
-stream = twitch.get_stream(channel, config.stream_resolution)
+streams = streamlink.streams("https://www.twitch.tv/" + channel)
+stream = streams.get(str(config.stream_resolution) + "p") \
+    or streams.get("best")
 if stream is None:
     logging.error("Twitch stream is invalid")
     sys.exit(1)
