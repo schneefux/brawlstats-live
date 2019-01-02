@@ -38,12 +38,13 @@ logging.info("Watching %s's channel", channel)
 
 while watcher.running:
     frame = buffer.read()
+    preview = frame.copy()
 
     box = watcher.state.stream_config.screen_box
     if box is not None:
-        cv2.rectangle(frame, box[0], box[1],
+        cv2.rectangle(preview, box[0], box[1],
                       (255, 0, 0), 2)
-    cv2.imshow("frame", frame)
+    cv2.imshow("preview", preview)
 
     key = 0xFF & cv2.waitKey(int(1.0/config.max_ui_fps*1000))
     if key == 27:
