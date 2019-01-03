@@ -68,7 +68,12 @@ class Screen(Enum):
 
     @staticmethod
     def get_first():
-        return [Screen.MAIN_MENU, Screen.LOADING, Screen.QUEUE]
+        return [
+            Screen.MAIN_MENU,
+            Screen.MAIN_MENU_TEAM,
+            Screen.LOADING,
+            Screen.QUEUE
+        ]
 
     def get_next(self):
         return [Screen[n.upper()] for n in self.value["next"]]
