@@ -10,18 +10,23 @@ class VideoBuffer(object):
     """
     Buffer a stream using ffmpeg.
     """
-    def __init__(self, buffer_seconds):
+    def __init__(self, buffer_seconds=10.0):
         self.buffer_seconds = buffer_seconds
         self.running = False
 
-    def start(self, stream, fps, resolution):
+    def start(self, stream, fps, resolution, realtime):
+        """
+        Start the ffmpeg process and block until the first frame.
+        """
         self.running = True
+        self._realtime = realtime
         self._fps = fps
-        self._last_frame = None
         self._buffer = queue.Queue(self._fps * self.buffer_seconds)
-        self._create_pipe(stream, resolution)
+        self._start_pipe(stream, resolution)
+        while self._buffer.empty():
+            pass
 
-    def _create_pipe(self, stream, resolution):
+    def _start_pipe(self, stream, resolution):
         probe_pipe = subprocess.Popen([
             "ffprobe", stream.url,
                        "-v", "error",
@@ -61,26 +66,11 @@ class VideoBuffer(object):
         self._thread = Thread(target=self._read_forever)
         self._thread.daemon = True
         self._thread.start()
-        while self._buffer.empty():
-            pass
-        self._update_last_frame()
 
     def stop(self):
         if self.running:
             self._pipe.terminate()
             self.running = False
-
-    def _update_last_frame(self):
-        if self.running:
-            try:
-                self._last_frame = self._buffer.get_nowait()
-            except queue.Empty:
-                logging.debug("stream buffer is empty, keeping frame")
-
-            self._timer = Timer(1.0/self._fps,
-                                self._update_last_frame)
-            self._timer.daemon = True
-            self._timer.start()
 
     def _read_forever(self):
         while self.running:
@@ -93,9 +83,11 @@ class VideoBuffer(object):
             frame = np.fromstring(raw_image, dtype="uint8")\
                 .reshape((self._byte_width, self._byte_length, 3))
             try:
-                self._buffer.put_nowait(frame)
+                self._buffer.put(frame, block=not self._realtime)
             except queue.Full:
-                logging.debug("stream buffer is full, dropping frame")
+                # skip current and drop oldest
+                logging.debug("stream buffer is full, dropping frames")
+                self._buffer.get()
 
-    def read(self):
-        return self._last_frame
+    def get(self):
+        return self._buffer.get()

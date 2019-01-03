@@ -1,8 +1,8 @@
-import cv2
 import time
+import streamlink
 from attr import evolve
-from threading import Timer
 
+from api.video_buffer import VideoBuffer
 from pipe.pipe import Pipe
 from pipe.sync_pipeline import SyncPipeline
 from pipe.async_pipeline import AsyncPipeline
@@ -15,6 +15,9 @@ from pipe.victory_defeat_pipe import VictoryDefeatPipe
 from state.game_state import GameState
 
 class StreamWatcher(object):
+    """
+    Open a stream, process frames and update the state for it.
+    """
     def __init__(self):
         self._realtime_pipeline = SyncPipeline((
             DevicePipe(),
@@ -24,45 +27,40 @@ class StreamWatcher(object):
             VictoryDefeatPipe(),
             DebugSink()))
 
-    def start(self, stream, max_fps, stream_config):
+    def start(self, stream_config, fps, realtime):
         self.state = GameState(stream_config=stream_config)
-        self._stream = stream
-        self._fps = max_fps
         self._realtime_pipeline.start()
         self._deferred_pipeline.start()
-        self._tick()
+
+        streams = streamlink.streams(stream_config.url)
+        stream = streams.get(str(stream_config.resolution) + "p") \
+            or streams.get("best")
+        if stream is None:
+            raise Exception("Stream is invalid", stream_config.url)
+
+        self._buffer = VideoBuffer()
+        self._buffer.start(
+            stream, fps, stream_config.resolution, True)
 
     def stop(self):
-        if self.running:
-            self._timer.cancel()
-            self._stream.stop()
+        self._deferred_pipeline.stop()
+        self._buffer.stop()
 
     @property
     def running(self):
-        return self._stream.running
+        return self._deferred_pipeline.running and self._buffer.running
 
-    def _tick(self):
-        if not self._stream.running:
-            return
+    def process(self):
+        frame = self._buffer.get()
 
-        start_time = time.time()
-        frame = self._stream.read()
-
-        # get any changes from previous tick
+        new_state = evolve(self.state, timestamp=time.time())
+        # get any changes from previous frame
         changes = self._deferred_pipeline.get_change()
-        new_state = evolve(self.state,
-                           timestamp=start_time,
-                           **changes)
+        new_state = evolve(new_state, **changes)
         changes = self._realtime_pipeline.process(frame, new_state)
         new_state = evolve(new_state, **changes)
         # push tasks to thread
         self._deferred_pipeline.process(frame, new_state)
 
         self.state = new_state
-
-        seconds_until_next = max(
-            1.0/self._fps - (time.time() - start_time), 0)
-
-        self._timer = Timer(seconds_until_next, self._tick)
-        self._timer.daemon = True
-        self._timer.start()
+        return frame.copy(), self.state

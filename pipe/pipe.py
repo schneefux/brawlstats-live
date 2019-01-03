@@ -2,9 +2,10 @@ class Pipe(object):
     """
     Abstract processing step that returns a modified state.
     """
-    realtime = False
-
     def start(self):
+        """
+        Set up the pipe.
+        """
         raise NotImplementedError()
 
     def process(self, frame, state):

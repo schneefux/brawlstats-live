@@ -5,11 +5,9 @@ import time
 import config
 import random
 import logging
-import streamlink
 import coloredlogs
 
 from api.twitch import TwitchAPIClient
-from api.video_buffer import VideoBuffer
 from stream_watcher import StreamWatcher
 from state.stream_config import StreamConfig
 
@@ -20,49 +18,42 @@ twitch = TwitchAPIClient(config.client_id)
 if len(sys.argv) > 1:
     if sys.argv[1].startswith("http"):
         url = sys.argv[1]
+        realtime = False
     else:
         url = "https://www.twitch.tv/" + sys.argv[1]
+        realtime = True
 else:
     url = "https://www.twitch.tv/" + random.choice(
         twitch.get_live_channel_names(
             twitch.get_game_id("Brawl Stars")))
+    realtime = True
 
-streams = streamlink.streams(url)
-stream = streams.get(str(config.stream_resolution) + "p") \
-    or streams.get("best")
-if stream is None:
-    logging.error("Twitch stream is invalid")
-    sys.exit(1)
-
-buffer = VideoBuffer(config.buffer_seconds)
-buffer.start(stream, config.max_ui_fps, config.stream_resolution)
-
-stream_config = StreamConfig(resolution=config.stream_resolution,
-                             url=url)
+stream_config = StreamConfig(
+    resolution=config.stream_resolution, url=url)
 
 watcher = StreamWatcher()
-watcher.start(buffer, config.max_fps, stream_config)
+watcher.start(stream_config, config.max_fps, realtime)
 
 logging.info("Watching %s", url)
 
 while watcher.running:
-    frame = buffer.read()
-    preview = frame.copy()
+    frame, state = watcher.process()
 
-    box = watcher.state.stream_config.screen_box
+    box = state.stream_config.screen_box
     if box is not None:
-        cv2.rectangle(preview, box[0], box[1],
+        cv2.rectangle(frame, box[0], box[1],
                       (255, 0, 0), 2)
-    cv2.imshow("preview", preview)
+    cv2.imshow("preview", frame)
 
-    key = 0xFF & cv2.waitKey(int(1.0/config.max_ui_fps*1000))
+    ms_until_next = max(1,
+        int(1000*(1.0/config.max_fps - (time.time()-state.timestamp))))
+    key = 0xFF & cv2.waitKey(ms_until_next)
     if key == 27:
         # ESC: quit
-        break
+        watcher.stop()
     if key == 32:
         # space: screenshot
-        filename = "{}.png".format(int(time.time()))
-        cv2.imwrite(filename,
+        cv2.imwrite("{}.png".format(int(time.time())),
                     frame[box[0][1]:box[1][1], box[0][0]:box[1][0]])
 
 watcher.stop()

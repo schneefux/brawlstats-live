@@ -9,8 +9,6 @@ class DebugSink(Sink):
     """
     Log.
     """
-    realtime = True
-
     def start(self):
         self._durations = []
 

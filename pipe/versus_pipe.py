@@ -10,8 +10,6 @@ class VersusPipe(Pipe):
     """
     Extract information from the versus screen.
     """
-    realtime = False
-
     def __init__(self):
         self._matcher = TemplateMatcher()
 

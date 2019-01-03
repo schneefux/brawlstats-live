@@ -4,7 +4,7 @@ from pipe.pipe import Pipe
 
 class SyncPipeline(Pipe):
     """
-    Execute pipes serially.
+    Execute child pipes serially.
     """
     def __init__(self, pipes):
         self.pipes = pipes
