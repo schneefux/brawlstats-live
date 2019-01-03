@@ -23,16 +23,19 @@ class DevicePipe(Pipe):
             return {}
 
         diff = cv2.absdiff(gray_frame, self._last_frame)
+        diff = cv2.threshold(diff, 1, 255, cv2.THRESH_BINARY)[1]
+
         total_pixels   = diff.shape[0] * diff.shape[1]
         changed_pixels = np.count_nonzero(diff)
         changed_ratio  = float(changed_pixels) / total_pixels
 
-        if changed_pixels == 0:
+        # assuming that the game's screen takes up at least 1/3
+        if changed_ratio < 0.33:
             return {}
 
-        # more pixels changed -> assign a stronger weight
-        cv2.accumulateWeighted(
-                diff, self._movement_map, changed_ratio * self.decay)
+        cv2.accumulateWeighted(diff,
+                self._movement_map,
+                changed_ratio * self.decay)
 
         if self._movement_map.max() == 0:
             return {}
