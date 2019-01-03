@@ -1,9 +1,10 @@
 import json
 import time
+import queue
+import logging
 import subprocess
 import numpy as np
 from threading import Timer, Thread
-from queue import Queue
 
 class VideoBuffer(object):
     """
@@ -17,7 +18,7 @@ class VideoBuffer(object):
         self.running = True
         self._fps = fps
         self._last_frame = None
-        self._buffer = Queue(self._fps * self.buffer_seconds)
+        self._buffer = queue.Queue(self._fps * self.buffer_seconds)
         self._create_pipe(stream, resolution)
 
     def _create_pipe(self, stream, resolution):
@@ -60,7 +61,8 @@ class VideoBuffer(object):
         self._thread = Thread(target=self._read_forever)
         self._thread.daemon = True
         self._thread.start()
-        time.sleep(self.buffer_seconds / 2)
+        while self._buffer.empty():
+            pass
         self._update_last_frame()
 
     def stop(self):
@@ -70,7 +72,10 @@ class VideoBuffer(object):
 
     def _update_last_frame(self):
         if self.running:
-            self._last_frame = self._buffer.get()
+            try:
+                self._last_frame = self._buffer.get_nowait()
+            except queue.Empty:
+                logging.debug("stream buffer is empty, keeping frame")
 
             self._timer = Timer(1.0/self._fps,
                                 self._update_last_frame)
@@ -87,7 +92,10 @@ class VideoBuffer(object):
 
             frame = np.fromstring(raw_image, dtype="uint8")\
                 .reshape((self._byte_width, self._byte_length, 3))
-            self._buffer.put(frame)
+            try:
+                self._buffer.put_nowait(frame)
+            except queue.Full:
+                logging.debug("stream buffer is full, dropping frame")
 
     def read(self):
         return self._last_frame
