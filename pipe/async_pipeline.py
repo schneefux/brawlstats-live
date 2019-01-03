@@ -8,7 +8,7 @@ from pipe.sink import Sink
 class AsyncPipeline(Sink):
     """
     Defer execution of child pipes to a seperate thread
-    and queue the resulting changes.
+    and store the state mutation transaction.
     """
     queue_size = 10
 
@@ -17,15 +17,14 @@ class AsyncPipeline(Sink):
         self.pipes = pipes
         self._state = None
         self._queue = queue.Queue(self.queue_size)
-        self._changes = queue.Queue(self.queue_size)
+        self._changes = dict()
 
     def start(self):
         for pipe in self.pipes:
             pipe.start()
 
         self.running = True
-        self._thread = Thread(
-            target=self._process_async_forever, args=())
+        self._thread = Thread(target=self._process_async_forever)
         self._thread.daemon = True
         self._thread.start()
 
@@ -35,26 +34,23 @@ class AsyncPipeline(Sink):
     def process(self, frame, state):
         self._state = state
         try:
-            self._queue.put(frame)
+            self._queue.put_nowait(frame)
         except queue.Full:
             logging.warning(
                 "async pipeline queue is full, dropping frame")
         return {}
 
-    def get_change(self):
-        try:
-            return self._changes.get_nowait()
-        except queue.Empty:
-            return {}
+    def reset_changes(self):
+        changes = self._changes
+        self._changes = dict()
+        return changes
 
     def _process_async_forever(self):
         while self.running:
             frame = self._queue.get()
-            changes = {}
             for pipe in self.pipes:
-                changes = {
-                    **changes,
-                    **pipe.process(frame,
-                                   evolve(self._state, **changes))
+                transaction_state = evolve(self._state, **self._changes)
+                self._changes = {
+                    **self._changes,
+                    **pipe.process(frame, transaction_state)
                 }
-            self._changes.put(changes)

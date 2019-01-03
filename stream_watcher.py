@@ -40,7 +40,7 @@ class StreamWatcher(object):
 
         self._buffer = VideoBuffer()
         self._buffer.start(
-            stream, fps, stream_config.resolution, True)
+            stream, fps, stream_config.resolution, realtime)
 
     def stop(self):
         self._deferred_pipeline.stop()
@@ -55,7 +55,7 @@ class StreamWatcher(object):
 
         new_state = evolve(self.state, timestamp=time.time())
         # get any changes from previous frame
-        changes = self._deferred_pipeline.get_change()
+        changes = self._deferred_pipeline.reset_changes()
         new_state = evolve(new_state, **changes)
         changes = self._realtime_pipeline.process(frame, new_state)
         new_state = evolve(new_state, **changes)
