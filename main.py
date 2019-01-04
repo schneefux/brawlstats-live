@@ -48,9 +48,9 @@ while watcher.running:
                       (255, 0, 0), 2)
     cv2.imshow("preview", frame)
 
-    ms_until_next = max(1,
-        int(1000*(1.0/config.max_fps - (time.time()-state.timestamp))))
-    key = 0xFF & cv2.waitKey(ms_until_next)
+    s_until_next = 1.0/config.max_fps - (time.time()-state.timestamp)
+    wait_ms = 1 if not realtime else max(1, int(1000*s_until_next))
+    key = 0xFF & cv2.waitKey(wait_ms)
     if key == 27:
         # ESC: quit
         watcher.stop()
