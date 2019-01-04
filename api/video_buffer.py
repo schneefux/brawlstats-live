@@ -43,6 +43,8 @@ class VideoBuffer(object):
         probe_pipe.terminate()
 
         if resolution != video_info["height"]:
+            logging.warning(
+                "video has different resolution than requested, rescaling")
             # rescale preserving aspect ratio
             ratio = resolution / float(video_info["height"])
             self._byte_length = round(video_info["width"] * ratio)

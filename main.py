@@ -28,6 +28,9 @@ else:
             twitch.get_game_id("Brawl Stars")))
     realtime = True
 
+if realtime:
+    logging.warning("processing live stream")
+
 stream_config = StreamConfig(
     resolution=config.stream_resolution, url=url)
 
