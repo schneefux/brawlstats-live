@@ -35,11 +35,13 @@ class ScreenPipe(Pipe):
             next_screens = Screen.get_first()
         else:
             # else check if it's one of the next screens
-            # or one of the ones after
-            current_screens = [state.current_screen]\
-                if state.current_screen is not None else []
+            current_screens = []
+            if state.current_screen is not None:
+                current_screens += [state.current_screen]
+            current_screens += [state.last_known_screen]
+
             next1_screens = state.last_known_screen.get_next()
-            next2_screens = [screen
+            next2_screens = [next_screen
                              for next_screen in next_screens
                              for screen in next_screen.get_next()]
             next_screens = list(set(
