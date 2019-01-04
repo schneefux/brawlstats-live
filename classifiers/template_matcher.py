@@ -6,6 +6,7 @@ import cv2
 import glob
 import json
 import time
+import logging
 import numpy as np
 from math import sqrt
 
