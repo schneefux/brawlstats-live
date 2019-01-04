@@ -44,6 +44,7 @@ def image(name):
     ("ingame_5", None),
     ("ingame_6", None),
     ("ingame_7", None),
+    ("ingame-solo-showdown_1", None), # no template
     ("ingame-brawlball_1", None),
     ("loading_1", "loading"),
     ("loading_2", "loading"),
@@ -54,6 +55,7 @@ def image(name):
     ("main-menu-team_1", "main_menu_team"),
     ("main-menu-team_2", "main_menu_team"),
     ("main-menu-team_3", "main_menu_team"),
+    ("mode-gem-grab_1", "mode_gem_grab"),
     #("other_1", None), # ?
     #("play-again_1", "play_again"), # skewed
     ("play-again_2", "play_again"),

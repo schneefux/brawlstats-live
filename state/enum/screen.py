@@ -51,7 +51,14 @@ class Screen(Enum):
     }
     LOADING = {
         "id": "loading",
-        "next": ("main_menu", "main_menu_team", "versus")
+        "next": (
+            "main_menu",
+            "main_menu_team",
+            "versus",
+            "mode_gem_grab",
+            "mode_heist",
+            "mode_solo_showdown",
+        )
     }
     VERSUS = {
         "id": "versus",
@@ -64,6 +71,18 @@ class Screen(Enum):
     PLAY_AGAIN = {
         "id": "play_again",
         "next": ("queue", "loading")
+    }
+    MODE_GEM_GRAB = {
+        "id": "mode_gem_grab",
+        "next": ("versus", )
+    }
+    MODE_HEIST = {
+        "id": "mode_heist",
+        "next": ("versus", )
+    }
+    MODE_SOLO_SHOWDOWN = {
+        "id": "mode_solo_showdown",
+        "next": ("victory_defeat", )
     }
 
     @staticmethod
