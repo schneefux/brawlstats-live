@@ -46,40 +46,6 @@ def test_should_search_start_and_find():
     assert changes["stream_config"].template_positions == { "main_menu": (0, 0) }
 
 
-def test_should_search_same_and_find_none():
-    state = GameState(stream_config=stream_config,
-                      last_known_screen=Screen.VERSUS,
-                      current_screen=Screen.VERSUS)
-    pipe = ScreenPipe()
-    pipe.start()
-
-    pipe._matchers[Screen.VERSUS].classify = lambda *_: []
-    pipe._matchers[Screen.VICTORY_DEFEAT].classify = lambda *_: []
-
-    changes = pipe.process(None, state)
-    assert changes == {
-        "current_screen": None
-    }
-
-
-def test_should_search_same_and_find():
-    state = GameState(stream_config=stream_config,
-                      last_known_screen=Screen.VERSUS,
-                      current_screen=Screen.VERSUS)
-    pipe = ScreenPipe()
-    pipe.start()
-
-    pipe._matchers[Screen.VERSUS].classify = \
-        lambda *_: [("versus", (0, 0))]
-
-    changes = pipe.process(None, state)
-    del changes["stream_config"]
-    assert changes == {
-        "current_screen": Screen.VERSUS,
-        "last_known_screen": Screen.VERSUS
-    }
-
-
 def test_should_search_next_and_find_none():
     state = GameState(stream_config=stream_config,
                       last_known_screen=Screen.VERSUS,
