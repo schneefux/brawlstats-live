@@ -23,7 +23,8 @@ class DevicePipe(Pipe):
             return {}
 
         diff = cv2.absdiff(gray_frame, self._last_frame)
-        diff = cv2.threshold(diff, 1, 255, cv2.THRESH_BINARY)[1]
+        # ignore noise from compression artifacts
+        diff = cv2.threshold(diff, 8, 255, cv2.THRESH_BINARY)[1]
 
         total_pixels   = diff.shape[0] * diff.shape[1]
         changed_pixels = np.count_nonzero(diff)
