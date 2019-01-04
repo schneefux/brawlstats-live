@@ -29,6 +29,7 @@ def image(name):
 
 @pytest.mark.parametrize("name,label", [
     #("brawlers_1", "brawlers"), # cut off
+    ("brawlers_2", "brawlers"),
     ("chest_1", "chest"),
     ("choose-event_1", "choose_event"),
     ("defeat_1", "victory_defeat"),
