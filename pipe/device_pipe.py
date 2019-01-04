@@ -8,7 +8,7 @@ class DevicePipe(Pipe):
     """
     Detect the embedded game screen inside the frame.
     """
-    decay = 0.01
+    decay = 0.1
 
     def start(self):
         self._movement_map = None
