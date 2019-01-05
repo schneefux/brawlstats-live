@@ -32,12 +32,12 @@ class VersusPipe(Pipe):
             return {}
 
         screen_box = state.stream_config.screen_box
-        ys = [match[1][0] for match in matches]
+        ys = [match[1][1] for match in matches]
         average_y = sum(ys) / len(ys)
         blue_team = [Brawler(match[0]) for match in matches
-                     if match[1][0] > average_y]
+                     if match[1][1] > average_y]
         red_team = [Brawler(match[0]) for match in matches
-                     if match[1][0] < average_y]
+                     if match[1][1] < average_y]
 
         return {
             "red_team": red_team,

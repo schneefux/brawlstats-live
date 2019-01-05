@@ -55,6 +55,8 @@ class TemplateMatcher(object):
         of matching templates.
         """
         screen_box = stream_config.screen_box
+        # .shape and array index: y, x
+        # screen box is absolute to the stream
         frame = frame[screen_box[0][1]:screen_box[1][1],
                       screen_box[0][0]:screen_box[1][0]]
 
@@ -73,18 +75,24 @@ class TemplateMatcher(object):
             if template_position is not None:
                 # cut out box where template is expected
                 h, w = template.image.shape
-                x = max(template_position[0] - screen_box[0][0], 0)
-                y = max(template_position[1] - screen_box[0][1], 0)
+                # template_position is absolute to the stream
+                x = template_position[0] - screen_box[0][0]
+                y = template_position[1] - screen_box[0][1]
+                if not (0 <= x < gray_frame.shape[1] - w \
+                        and 0 <= y < gray_frame.shape[0] - h):
+                    continue
                 query_frame = gray_frame[y:y+h, x:x+w]
             else:
-                template_position = (0, 0)
-
+                # bounding box is relative to the screen box
                 box = template.bounding_box
                 x1 = int(box[0][0] * gray_frame.shape[1])
                 y1 = int(box[0][1] * gray_frame.shape[0])
                 x2 = int(box[1][0] * gray_frame.shape[1])
                 y2 = int(box[1][1] * gray_frame.shape[0])
                 query_frame = gray_frame[y1:y2, x1:x2]
+                template_position = (
+                    x1 + screen_box[0][0],
+                    y1 + screen_box[0][1])
 
             if template.image.shape[0] > query_frame.shape[0] or \
                     template.image.shape[1] > query_frame.shape[1]:
@@ -92,15 +100,14 @@ class TemplateMatcher(object):
 
             correlation_map = cv2.matchTemplate(
                 query_frame, template.image, cv2.TM_CCOEFF_NORMED)
+            # positions: [y, x]
             positions = np.where(
                 correlation_map > self.min_match_confidence)
 
-            for position in zip(*positions):
-                # translate position back to original frame
-                position_t = (position[0] + screen_box[0][0]
-                              + template_position[0],
-                              position[1] + screen_box[0][1]
-                              + template_position[1])
+            for position_y, position_x in zip(*positions):
+                # position_t is absolute to the screen
+                position_t = (position_x + template_position[0],
+                              position_y + template_position[1])
 
                 for _, match_position in matches:
                     dist = sqrt(

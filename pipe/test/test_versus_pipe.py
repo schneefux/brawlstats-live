@@ -12,9 +12,9 @@ from pipe.versus_pipe import VersusPipe
 @pytest.mark.parametrize("data,teams", [
     (
         (
-            ('colt', (16, 359)), ('mortis', (18, 617)),
-            ('mortis', (333, 242)), ('shelly', (334, 110)),
-            ('tara', (19, 490)), ('tara', (335, 368))
+            ('colt', (359, 16)), ('mortis', (617, 18)),
+            ('mortis', (242, 333)), ('shelly', (110, 334)),
+            ('tara', (490, 19)), ('tara', (368, 335))
         ), (
             (Brawler.COLT, Brawler.TARA, Brawler.MORTIS),
             (Brawler.SHELLY, Brawler.TARA, Brawler.MORTIS)
@@ -22,9 +22,9 @@ from pipe.versus_pipe import VersusPipe
     ),
     (
         (
-            ('colt', (315, 249)), ('jessie', (89, 279)),
-            ('leon', (317, 155)), ('nita', (91, 373)),
-            ('nita', (318, 60)), ('poco', (90, 465))
+            ('colt', (249, 315)), ('jessie', (279, 89)),
+            ('leon', (155, 317)), ('nita', (373, 91)),
+            ('nita', (60, 318)), ('poco', (465, 90))
         ), (
             (Brawler.JESSIE, Brawler.NITA, Brawler.POCO),
             (Brawler.COLT, Brawler.LEON, Brawler.NITA)
@@ -33,7 +33,7 @@ from pipe.versus_pipe import VersusPipe
 ])
 def test_should_place_into_teams(data, teams):
     stream_config = StreamConfig(resolution=480,
-                                 screen_box=((0, 0), (852, 480)))
+                                 screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VERSUS)
     pipe = VersusPipe()
@@ -48,7 +48,7 @@ def test_should_place_into_teams(data, teams):
 
 def test_should_noop_on_no_match(monkeypatch):
     stream_config = StreamConfig(resolution=480,
-                                 screen_box=((0, 0), (852, 480)))
+                                 screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
                       current_screen=Screen.VERSUS)
     pipe = VersusPipe()

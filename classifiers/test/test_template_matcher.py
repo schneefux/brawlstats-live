@@ -139,9 +139,22 @@ def test_brawlers(name, labels):
 
 def test_with_cached_position():
     m = matcher("screen")
-    frame, stream_config = image("victory_1")
+    frame = image("victory_1")[0]
+
+    screen_box = ((10, 10), (frame.shape[1]-10, frame.shape[0]-10))
+    stream_config = StreamConfig(resolution=480, screen_box=screen_box)
+
+    # first classification
     label, position = m.classify(frame, stream_config)[0]
+    assert label == "victory_defeat"
+
+    # again with cached position
     stream_config = evolve(stream_config, template_positions = {
-	"victory": position
+	"victory_defeat": position
     })
+    assert m.classify(frame, stream_config)[0] == (label, position)
+
+    # again with cached position, but box is shifted by 10px
+    screen_box = ((20, 20), (frame.shape[1], frame.shape[0]))
+    stream_config = StreamConfig(resolution=480, screen_box=screen_box)
     assert m.classify(frame, stream_config)[0] == (label, position)
