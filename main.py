@@ -41,12 +41,13 @@ logging.info("Watching %s", url)
 
 while watcher.running:
     frame, state = watcher.process()
+    preview = frame.copy()
 
     box = state.stream_config.screen_box
     if box is not None:
-        cv2.rectangle(frame, box[0], box[1],
+        cv2.rectangle(preview, box[0], box[1],
                       (255, 0, 0), 2)
-    cv2.imshow("preview", frame)
+    cv2.imshow("preview", preview)
 
     s_until_next = 1.0/config.max_fps - (time.time()-state.timestamp)
     wait_ms = 1 if not realtime else max(1, int(1000*s_until_next))
