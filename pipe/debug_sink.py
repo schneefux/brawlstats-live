@@ -22,7 +22,7 @@ class DebugSink(Sink):
             screen_box = state.stream_config.screen_box
             cut_frame = frame[screen_box[0][1]:screen_box[1][1],
                               screen_box[0][0]:screen_box[1][0]]
-            path = "dataset/{}/".format(
+            path = "model/screen/dataset/new/{}/".format(
                     state.current_screen.name.lower())
             if not os.path.exists(path):
                 os.makedirs(path)

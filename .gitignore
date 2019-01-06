@@ -1,4 +1,4 @@
-dataset/
+model/*/dataset/
 config.py
 
 # Byte-compiled / optimized / DLL files
