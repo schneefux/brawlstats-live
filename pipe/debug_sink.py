@@ -18,23 +18,22 @@ class DebugSink(Sink):
         if len(self._durations) > 10:
             self._durations = self._durations[1:]
 
-        if state.current_screen is not None:
+        if state.screen is not None:
             screen_box = state.stream_config.screen_box
             cut_frame = frame[screen_box[0][1]:screen_box[1][1],
                               screen_box[0][0]:screen_box[1][0]]
             path = "model/screen/dataset/new/{}/".format(
-                    state.current_screen.name.lower())
+                state.screen.name.lower())
             if not os.path.exists(path):
                 os.makedirs(path)
             cv2.imwrite("{}/{}.jpg".format(
                 path, int(state.timestamp)), cut_frame)
 
         logging.debug(
-            "screen: %s (last: %s, result: %s), " +
+            "screen: %s (last result: %s), " +
             "%s vs. %s, " +
             "%2.2f max fps",
-            state.current_screen or "unknown",
-            state.last_known_screen or "unknown",
+            state.screen or "unknown",
             state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",
             ",".join([b.name for b in state.red_team]) or "unknown",

@@ -6,8 +6,7 @@ from state.stream_config import StreamConfig
 @attrs(frozen=True)
 class GameState(object):
     stream_config = attrib(type=StreamConfig)
-    current_screen = attrib(type=Screen, default=None)
-    last_known_screen = attrib(type=Screen, default=None)
+    screen = attrib(type=Screen, default=None)
     last_match_result = attrib(type=MatchResult, default=None)
     timestamp = attrib(type=int, default=None)
     blue_team = attrib(type=list, default=[])

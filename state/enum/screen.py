@@ -2,97 +2,20 @@ from enum import Enum, unique
 
 @unique
 class Screen(Enum):
-    # corresponds to templates/screen/{name.lower()}.png
-    MAIN_MENU = {
-        "id": "main_menu",
-        "next": (
-            "main_menu_team",
-            "battle_log",
-            "choose_event",
-            "queue",
-            "chest",
-            "brawlers"
-        )
-    }
-    MAIN_MENU_TEAM = {
-        "id": "main_menu_team",
-        "next": (
-            "main_menu",
-            "battle_log",
-            "choose_event",
-            "queue",
-            "chest",
-            "brawlers"
-        )
-    }
-    BRAWLERS = {
-        "id": "brawlers",
-        "next": ("select_brawler", "main_menu", "main_menu_team")
-    }
-    SELECT_BRAWLER = {
-        "id": "select_brawler",
-        "next": ("brawlers", "main_menu", "main_menu_team")
-    }
-    CHEST = {
-        "id": "chest",
-        "next": ("main_menu", "main_menu_team")
-    }
-    BATTLE_LOG = {
-        "id": "battle_log",
-        "next": ("main_menu", "main_menu_team")
-    }
-    CHOOSE_EVENT = {
-        "id": "choose_event",
-        "next": ("main_menu", "main_menu_team")
-    }
-    QUEUE = {
-        "id": "queue",
-        "next": ("loading", )
-    }
-    LOADING = {
-        "id": "loading",
-        "next": (
-            "main_menu",
-            "main_menu_team",
-            "versus",
-            "mode_gem_grab",
-            "mode_heist",
-            "mode_solo_showdown",
-        )
-    }
-    VERSUS = {
-        "id": "versus",
-        "next": ("victory_defeat", )
-    }
-    VICTORY_DEFEAT = {
-        "id": "victory_defeat",
-        "next": ("play_again", )
-    }
-    PLAY_AGAIN = {
-        "id": "play_again",
-        "next": ("queue", "loading")
-    }
-    MODE_GEM_GRAB = {
-        "id": "mode_gem_grab",
-        "next": ("versus", )
-    }
-    MODE_HEIST = {
-        "id": "mode_heist",
-        "next": ("versus", )
-    }
-    MODE_SOLO_SHOWDOWN = {
-        "id": "mode_solo_showdown",
-        "next": ("victory_defeat", )
-    }
-
-    @staticmethod
-    def get_first():
-        return [
-            Screen.MAIN_MENU,
-            Screen.MAIN_MENU_TEAM,
-            Screen.LOADING,
-            Screen.QUEUE
-        ]
-
-    def get_next(self):
-        return [Screen[n.upper()] for n in self.value["next"]]
+    # these are the model/screen/train.py indices
+    # = dataset/train/* folder names in alphabetical order
+    BATTLE_LOG = 0
+    BRAWLERS = 1
+    CHEST = 2
+    CHOOSE_EVENT = 3
+    DEFEAT = 4
+    LOADING = 5
+    MAIN_MENU = 6
+    MAIN_MENU_TEAM = 7
+    MODE_GEM_GRAB = 8
+    MODEL_SOLO_SHOWDOWN = 9
+    PLAY_AGAIN = 10
+    QUEUE = 11
+    RANK = 12
+    VERSUS = 13
+    VICTORY = 14

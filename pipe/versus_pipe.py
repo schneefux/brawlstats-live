@@ -18,7 +18,7 @@ class VersusPipe(Pipe):
                                      1920, 1080)
 
     def process(self, frame, state):
-        if state.current_screen != Screen.VERSUS or \
+        if state.screen != Screen.VERSUS or \
                 state.stream_config.screen_box is None:
             return {}
 

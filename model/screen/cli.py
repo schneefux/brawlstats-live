@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import cv2
 import sys
 import numpy as np
@@ -25,7 +26,8 @@ for path in sys.argv[1:]:
     frame = frame.reshape((1, ) + frame.shape)
 
     feature_vector = model.predict(frame)[0]
-    best_match_index = np.argmax(feature_vector)
-    label = feature_map[best_match_index]
-    print("{}: {} ({}%)".format(
-        path, label, int(100*feature_vector[best_match_index])))
+    matches = [(feature_map[i], feature_vector[i])
+            for i in range(len(feature_vector))
+            if feature_vector[i] > 0.1]
+    for label, confidence in matches:
+        print("{}: {} ({}%)".format(path, label, int(100*confidence)))

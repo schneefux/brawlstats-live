@@ -3,7 +3,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, \
     Activation, Dropout, Flatten, Dense
 
-N_SCREENS = 14
+N_SCREENS = 15
 IMAGE_SHAPE = (100, 100)
 
 model = Sequential()
