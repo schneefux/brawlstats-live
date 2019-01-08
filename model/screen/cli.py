@@ -5,7 +5,7 @@ import numpy as np
 from keras.models import load_model
 from keras.backend import image_data_format
 
-IMAGE_SHAPE = (100, 100)
+IMAGE_SHAPE = (10, 10)
 INDICES = {'showdown_defeated': 24, 'trophyroad': 31, 'profile': 20, 'brawlers': 1, 'showdown_ingame': 26, 'heist_end': 11, 'queue': 21, 'rank': 22, 'showdown_solo_start': 28, 'main_menu': 17, 'club': 4, 'chest': 2, 'gemgrab_end': 7, 'play_again': 19, 'heist_start': 13, 'invite': 15, 'loading': 16, 'showdown_showdown': 27, 'gemgrab_start': 9, 'showdown_wait_respawn': 30, 'event_info': 6, 'heist_wait_respawn': 14, 'showdown_wait_ally_respawn': 29, 'heist_ingame': 12, 'gemgrab_ingame': 8, 'defeat': 5, 'gemgrab_wait_respawn': 10, 'victory': 33, 'choose_event': 3, 'battle_log': 0, 'main_menu_team': 18, 'showdown_duo_start': 25, 'versus': 32, 'select_brawler': 23}
 feature_map = {v: k for k, v in INDICES.items()}
 
