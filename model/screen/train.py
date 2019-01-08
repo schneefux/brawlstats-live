@@ -24,26 +24,8 @@ model.add(BatchNormalization(axis=channel_dim))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-#model.add(Conv2D(64, (3, 3)))
-#model.add(Activation("relu"))
-#model.add(BatchNormalization(axis=channel_dim))
-#model.add(Conv2D(64, (3, 3)))
-#model.add(Activation("relu"))
-#model.add(BatchNormalization(axis=channel_dim))
-#model.add(MaxPooling2D(pool_size=(2, 2)))
-#model.add(Dropout(0.25))
-
-#model.add(Conv2D(128, (3, 3)))
-#model.add(Activation("relu"))
-#model.add(BatchNormalization(axis=channel_dim))
-#model.add(Conv2D(128, (3, 3)))
-#model.add(Activation("relu"))
-#model.add(BatchNormalization(axis=channel_dim))
-#model.add(MaxPooling2D(pool_size=(2, 2)))
-#model.add(Dropout(0.25))
-
 model.add(Flatten())
-model.add(Dense(1024))
+model.add(Dense(128))
 model.add(Activation("relu"))
 model.add(BatchNormalization(axis=channel_dim))
 model.add(Dropout(0.5))
@@ -83,7 +65,7 @@ print("indices: " + str(train_generator.class_indices))
 
 model.fit_generator(
     train_generator,
-    steps_per_epoch=SAMPLES // BATCH_SIZE,
+    steps_per_epoch=(1.0-VALIDATION_RATIO) * SAMPLES // BATCH_SIZE,
     epochs=EPOCHS,
     validation_data=validation_generator,
     validation_steps=VALIDATION_RATIO * SAMPLES // BATCH_SIZE,
