@@ -6,7 +6,7 @@ from keras.backend import image_data_format
 from classifiers.matcher import Matcher
 
 class ConvnetMatcher(Matcher):
-    min_confidence = 0.7
+    min_confidence = 0.90
 
     def __init__(self, image_shape, feature_map):
         self._image_shape = image_shape

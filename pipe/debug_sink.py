@@ -18,12 +18,12 @@ class DebugSink(Sink):
         if len(self._durations) > 10:
             self._durations = self._durations[1:]
 
-        if state.screen is not None:
+        if state.stream_config.screen_box is not None and \
+                state.screen is None:
             screen_box = state.stream_config.screen_box
             cut_frame = frame[screen_box[0][1]:screen_box[1][1],
                               screen_box[0][0]:screen_box[1][0]]
-            path = "model/screen/dataset/new/{}/".format(
-                state.screen.name.lower())
+            path = "model/screen/dataset/new"
             if not os.path.exists(path):
                 os.makedirs(path)
             cv2.imwrite("{}/{}.jpg".format(
