@@ -62,12 +62,14 @@ validation_generator = validation_datagen.flow_from_directory(
 
 print("indices: " + str(train_generator.class_indices))
 
+checkpoint = ModelCheckpoint("model_checkpoint.h5",
+    monitor="val_acc", verbose=1, save_best_only=True, mode="max")
+
 model.fit_generator(
     train_generator,
     steps_per_epoch=(1.0-VALIDATION_RATIO) * SAMPLES // BATCH_SIZE,
     epochs=EPOCHS,
     validation_data=validation_generator,
     validation_steps=VALIDATION_RATIO * SAMPLES // BATCH_SIZE,
+    callbacks=[checkpoint],
     verbose=1)
-
-model.save("model.h5")
