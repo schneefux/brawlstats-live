@@ -23,6 +23,7 @@ for path in sys.argv[1:]:
     frame = frame[::-1]
     # cv2 int to keras float
     frame = frame.astype(np.float32)
+    frame = frame / 255.0
     frame = frame.reshape((1, ) + frame.shape)
 
     feature_vector = model.predict(frame)[0]

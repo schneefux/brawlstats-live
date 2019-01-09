@@ -32,6 +32,9 @@ class ConvnetMatcher(Matcher):
         frame = frame[::-1]
         # cv2 int to keras float
         frame = frame.astype(np.float32)
+        # rescale
+        frame = frame / 255.0
+        # add feature vector placeholder
         frame = frame.reshape((1, ) + frame.shape)
 
         feature_vector = self._model.predict(frame)[0]
