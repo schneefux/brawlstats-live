@@ -7,7 +7,7 @@ from state.stream_config import StreamConfig
 from classifiers.convnet_matcher import ConvnetMatcher
 
 matcher = ConvnetMatcher(
-    image_shape=(10, 10),
+    image_shape=(100, 100),
     feature_map={screen.value: screen for screen in Screen})
 matcher.load_model("model/screen/model.h5")
 

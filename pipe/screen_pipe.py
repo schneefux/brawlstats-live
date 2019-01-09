@@ -10,7 +10,7 @@ class ScreenPipe(Pipe):
     """
     def __init__(self):
         self._matcher = ConvnetMatcher(
-            image_shape=(10, 10),
+            image_shape=(100, 100),
             feature_map={screen.value: screen for screen in Screen})
 
     def start(self):

@@ -1,13 +1,14 @@
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
+from keras.callbacks import ModelCheckpoint
 from keras.layers import Conv2D, MaxPooling2D, \
     Activation, BatchNormalization, Dropout, Flatten, Dense
 from keras.backend import image_data_format
 
 SAMPLES = 2200
 VALIDATION_RATIO = 0.2
-N_SCREENS = 33
-IMAGE_SHAPE = (10, 10)
+N_SCREENS = 15
+IMAGE_SHAPE = (100, 100)
 BATCH_SIZE = 16
 EPOCHS = 10
 
@@ -17,6 +18,11 @@ input_shape = (3, ) + IMAGE_SHAPE if channels_first \
     else IMAGE_SHAPE + (3, )
 
 model = Sequential()
+
+model.add(Conv2D(32, (3, 3), input_shape=input_shape))
+model.add(BatchNormalization(axis=channel_dim))
+model.add(Activation("relu"))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Conv2D(32, (3, 3), input_shape=input_shape))
 model.add(BatchNormalization(axis=channel_dim))
