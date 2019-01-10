@@ -29,6 +29,11 @@ class DebugSink(Sink):
             cv2.imwrite("{}/{}.jpg".format(
                 path, int(state.timestamp)), cut_frame)
 
+        if sum(self._durations) == 0:
+            fps = -1.0
+        else:
+            fps = len(self._durations) / sum(self._durations)
+
         logging.debug(
             "screen: %s (last result: %s), " +
             "%s vs. %s, " +
@@ -37,7 +42,7 @@ class DebugSink(Sink):
             state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",
             ",".join([b.name for b in state.red_team]) or "unknown",
-            len(self._durations) / sum(self._durations)
+            fps
         )
 
         return {}
