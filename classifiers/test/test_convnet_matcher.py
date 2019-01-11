@@ -6,8 +6,10 @@ from state.enum.screen import Screen
 from state.stream_config import StreamConfig
 from classifiers.convnet_matcher import ConvnetMatcher
 
+from model.screen.config import shape
+
 matcher = ConvnetMatcher(
-    image_shape=(100, 100),
+    image_shape=shape,
     feature_map={screen.value: screen for screen in Screen})
 matcher.load_model("model/screen/model.h5")
 

@@ -29,7 +29,7 @@ class ConvnetMatcher(Matcher):
             frame = np.moveaxis(frame, -1, 0)
 
         # cv2 bgr to keras rgb
-        frame = frame[::-1]
+        frame = frame[...,::-1]
         # cv2 int to keras float
         frame = frame.astype(np.float32)
         # rescale

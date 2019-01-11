@@ -4,13 +4,15 @@ from pipe.pipe import Pipe
 from state.enum.screen import Screen
 from classifiers.convnet_matcher import ConvnetMatcher
 
+from model.screen.config import shape
+
 class ScreenPipe(Pipe):
     """
     Detect the current game view, for example the loading screen.
     """
     def __init__(self):
         self._matcher = ConvnetMatcher(
-            image_shape=(100, 100),
+            image_shape=shape,
             feature_map={screen.value: screen for screen in Screen})
 
     def start(self):

@@ -5,10 +5,12 @@ from keras.layers import Conv2D, MaxPooling2D, \
     Activation, BatchNormalization, Dropout, Flatten, Dense
 from keras.backend import image_data_format
 
-SAMPLES = 2200
+from config import shape, feature_map
+
+SAMPLES = 3600
 VALIDATION_RATIO = 0.2
-N_SCREENS = 15
-IMAGE_SHAPE = (100, 100)
+N_SCREENS = 32
+IMAGE_SHAPE = shape
 BATCH_SIZE = 16
 EPOCHS = 10
 
