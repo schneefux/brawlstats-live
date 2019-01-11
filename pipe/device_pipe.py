@@ -71,7 +71,12 @@ class DevicePipe(Pipe):
                       key=lambda rect: rect[2]*rect[3],
                       reverse=True)[0]
 
+        if h > w:
+            # all devices are assumed to be landscape
+            return {}
+
         self._last_frame = gray_frame
+
         stream_config = evolve(state.stream_config,
                                screen_box=((x1, y1),
                                            (x1+w, y1+h)))
