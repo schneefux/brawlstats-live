@@ -6,6 +6,8 @@ import config
 import random
 import logging
 import coloredlogs
+from threading import Thread
+from flask import Flask, jsonify
 
 from api.twitch import TwitchAPIClient
 from stream_watcher import StreamWatcher
@@ -39,6 +41,26 @@ watcher.start(stream_config, config.max_fps, realtime)
 
 logging.info("Watching %s", url)
 
+if len(sys.argv) > 2 and sys.argv[2] in ["-s", "--server"]:
+    app = Flask(__name__)
+
+    @app.route("/state")
+    def get_state(channel):
+        return jsonify({
+            "screen": watcher.state.screen.name \
+                if watcher.state.screen is not None else None,
+            "last_match_result": watcher.state.last_match_result.name \
+                if watcher.state.last_match_result is not None else None,
+            "blue_team": [b.name for b in watcher.state.blue_team] \
+                if watcher.state.blue_team is not None else [],
+            "red_team": [b.name for b in watcher.state.red_team] \
+                if watcher.state.red_team is not None else []
+        })
+
+    thread = Thread(target=app.run)
+    thread.daemon = True
+    thread.start()
+
 while watcher.running:
     frame, state = watcher.process()
     preview = frame.copy()
@@ -46,7 +68,7 @@ while watcher.running:
     box = state.stream_config.screen_box
     if box is not None:
         cv2.rectangle(preview, box[0], box[1],
-                      (255, 0, 0), 2)
+                        (255, 0, 0), 2)
     cv2.imshow("preview", preview)
 
     s_until_next = 1.0/config.max_fps - (time.time()-state.timestamp)
