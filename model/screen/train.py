@@ -9,7 +9,7 @@ from config import shape, feature_map
 
 SAMPLES = 3600
 VALIDATION_RATIO = 0.2
-N_SCREENS = 32
+N_SCREENS = 26
 IMAGE_SHAPE = shape
 BATCH_SIZE = 16
 EPOCHS = 10
