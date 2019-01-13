@@ -3,6 +3,7 @@ import numpy as np
 from attr import evolve
 
 from pipe.pipe import Pipe
+from state.enum.screen import Screen
 
 class DevicePipe(Pipe):
     """
@@ -15,6 +16,17 @@ class DevicePipe(Pipe):
         self._last_frame = None
 
     def process(self, frame, state):
+        if state.stream_config.freeze_screen_box:
+            return {}
+
+        # most of the time, loading comes after queue
+        # so it should cover the whole screen
+        if state.screen == Screen.LOADING:
+            return {
+                "stream_config": evolve(state.stream_config,
+                                        freeze_screen_box=True)
+            }
+
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if self._last_frame is None:
             self._movement_map = np.zeros(gray_frame.shape,
