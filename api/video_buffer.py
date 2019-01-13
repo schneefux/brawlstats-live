@@ -14,12 +14,12 @@ class VideoBuffer(object):
         self.buffer_seconds = buffer_seconds
         self.running = False
 
-    def start(self, url, fps, resolution, realtime):
+    def start(self, url, fps, resolution, block_read):
         """
         Start the ffmpeg process and block until the first frame.
         """
         self.running = True
-        self._realtime = realtime
+        self._block_read = block_read
         self._fps = fps
         self._buffer = queue.Queue(self._fps * self.buffer_seconds)
         self._start_pipe(url, resolution)
@@ -85,7 +85,7 @@ class VideoBuffer(object):
             frame = np.fromstring(raw_image, dtype="uint8")\
                 .reshape((self._byte_width, self._byte_length, 3))
             try:
-                self._buffer.put(frame, block=not self._realtime)
+                self._buffer.put(frame, block=self._block_read)
             except queue.Full:
                 # skip current and drop oldest
                 logging.debug("stream buffer is full, dropping frames")

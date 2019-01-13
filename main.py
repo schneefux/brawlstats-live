@@ -37,7 +37,8 @@ stream_config = StreamConfig(
 
 watcher = StreamWatcher()
 watcher.start(stream_config, config.max_fps,
-    args.live, args.url if args.file else None)
+    block_operations=not args.live,
+    video_url=args.url if args.file else None)
 
 logging.info("Watching %s", args.url)
 

@@ -25,7 +25,8 @@ class StreamWatcher(object):
             VersusPipe(),
             DebugSink()))
 
-    def start(self, stream_config, fps, realtime, video_url=None):
+    def start(self, stream_config, fps, block_operations, video_url=None):
+        self._block_deferred_pipeline = block_operations
         self.state = GameState(stream_config=stream_config)
         self._realtime_pipeline.start()
         self._deferred_pipeline.start()
@@ -39,7 +40,7 @@ class StreamWatcher(object):
             video_url = stream.url
 
         self._buffer = VideoBuffer()
-        self._buffer.start(video_url, fps, stream_config.resolution, realtime)
+        self._buffer.start(video_url, fps, stream_config.resolution, block_read=block_operations)
 
     def stop(self):
         self._deferred_pipeline.stop()
@@ -53,13 +54,21 @@ class StreamWatcher(object):
         frame = self._buffer.get()
 
         new_state = evolve(self.state, timestamp=time.time())
-        # get any changes from previous frame
-        changes = self._deferred_pipeline.reset_changes()
-        new_state = evolve(new_state, **changes)
+
+        # process sync tasks
         changes = self._realtime_pipeline.process(frame, new_state)
         new_state = evolve(new_state, **changes)
-        # push tasks to thread
+
+        # push tasks to async pipeline
         self._deferred_pipeline.process(frame, new_state)
+
+        # block if not watching a live stream
+        while self._block_deferred_pipeline and self._deferred_pipeline.processing():
+            pass
+
+        # get changes from this frame (if blocking) or previous frame
+        changes = self._deferred_pipeline.reset_changes()
+        new_state = evolve(new_state, **changes)
 
         self.state = new_state
         return frame.copy(), self.state

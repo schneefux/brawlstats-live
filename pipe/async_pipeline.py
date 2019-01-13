@@ -40,6 +40,9 @@ class AsyncPipeline(Sink):
                 "async pipeline queue is full, dropping frame")
         return {}
 
+    def processing(self):
+        return not self._queue.empty()
+
     def reset_changes(self):
         changes = self._changes
         self._changes = dict()
