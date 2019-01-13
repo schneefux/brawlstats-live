@@ -9,23 +9,14 @@ class DevicePipe(Pipe):
     """
     Detect the embedded game screen inside the frame.
     """
-    decay = 0.1
-
     def start(self):
         self._movement_map = None
         self._last_frame = None
+        self._decay = 0.2
 
     def process(self, frame, state):
-        if state.stream_config.freeze_screen_box:
+        if self._decay <= 0.05:
             return {}
-
-        # most of the time, loading comes after queue
-        # so it should cover the whole screen
-        if state.screen == Screen.LOADING:
-            return {
-                "stream_config": evolve(state.stream_config,
-                                        freeze_screen_box=True)
-            }
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if self._last_frame is None:
@@ -48,7 +39,7 @@ class DevicePipe(Pipe):
 
         cv2.accumulateWeighted(diff,
                 self._movement_map,
-                changed_ratio * self.decay)
+                changed_ratio * self._decay)
 
         if self._movement_map.max() == 0:
             return {}
@@ -92,6 +83,10 @@ class DevicePipe(Pipe):
         stream_config = evolve(state.stream_config,
                                screen_box=((x1, y1),
                                            (x1+w, y1+h)))
+
+        # slowly freeze the screen box after a good full screen transition
+        if state.screen == Screen.LOADING:
+            self._decay /= 2.0
 
         return {
             "stream_config": stream_config
