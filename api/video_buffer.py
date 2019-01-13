@@ -14,7 +14,7 @@ class VideoBuffer(object):
         self.buffer_seconds = buffer_seconds
         self.running = False
 
-    def start(self, stream, fps, resolution, realtime):
+    def start(self, url, fps, resolution, realtime):
         """
         Start the ffmpeg process and block until the first frame.
         """
@@ -22,13 +22,13 @@ class VideoBuffer(object):
         self._realtime = realtime
         self._fps = fps
         self._buffer = queue.Queue(self._fps * self.buffer_seconds)
-        self._start_pipe(stream, resolution)
+        self._start_pipe(url, resolution)
         while self._buffer.empty():
             pass
 
-    def _start_pipe(self, stream, resolution):
+    def _start_pipe(self, url, resolution):
         probe_pipe = subprocess.Popen([
-            "ffprobe", stream.url,
+            "ffprobe", url,
                        "-v", "error",
                        "-show_entries", "stream=width,height",
                        "-of", "json"],
@@ -54,7 +54,7 @@ class VideoBuffer(object):
             self._byte_width  = video_info["height"]
 
         self._pipe = subprocess.Popen([
-            "ffmpeg", "-i", stream.url,
+            "ffmpeg", "-i", url,
                       "-loglevel", "quiet", # no text output
                       "-an", # disable audio
                       "-vf", "scale=-1:" + str(resolution),

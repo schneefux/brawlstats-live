@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import cv2
-import sys
 import time
 import config
 import random
 import logging
+import argparse
 import coloredlogs
 from threading import Thread
 from flask import Flask, jsonify
@@ -15,37 +15,37 @@ from state.stream_config import StreamConfig
 
 coloredlogs.install(level="DEBUG")
 
-twitch = TwitchAPIClient(config.client_id)
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--server", action="store_true")
+parser.add_argument("-f", "--file", action="store_true")
+parser.add_argument("-l", "--live", action="store_true")
+parser.add_argument("-r", "--random", action="store_true")
+parser.add_argument("-u", "--url")
+args = parser.parse_args()
 
-if len(sys.argv) > 1:
-    if sys.argv[1].startswith("http"):
-        url = sys.argv[1]
-        realtime = False
-    else:
-        url = "https://www.twitch.tv/" + sys.argv[1]
-        realtime = True
-else:
-    url = "https://www.twitch.tv/" + random.choice(
-        twitch.get_live_channel_names(
-            twitch.get_game_id("Brawl Stars")))
-    realtime = True
-
-if realtime:
+if args.live:
     logging.warning("processing live stream")
 
+if args.url is None:
+    twitch = TwitchAPIClient(config.client_id)
+    args.url = "https://www.twitch.tv/" + random.choice(
+        twitch.get_live_channel_names(
+            twitch.get_game_id("Brawl Stars")))
+
 stream_config = StreamConfig(
-    resolution=config.stream_resolution, url=url)
+    resolution=config.stream_resolution, url=args.url)
 
 watcher = StreamWatcher()
-watcher.start(stream_config, config.max_fps, realtime)
+watcher.start(stream_config, config.max_fps,
+    args.live, args.url if args.file else None)
 
-logging.info("Watching %s", url)
+logging.info("Watching %s", args.url)
 
-if len(sys.argv) > 2 and sys.argv[2] in ["-s", "--server"]:
+if args.server:
     app = Flask(__name__)
 
     @app.route("/state")
-    def get_state(channel):
+    def get_state():
         return jsonify({
             "screen": watcher.state.screen.name \
                 if watcher.state.screen is not None else None,
@@ -72,7 +72,7 @@ while watcher.running:
     cv2.imshow("preview", preview)
 
     s_until_next = 1.0/config.max_fps - (time.time()-state.timestamp)
-    wait_ms = 1 if not realtime else max(1, int(1000*s_until_next))
+    wait_ms = 1 if not args.live else max(1, int(1000*s_until_next))
     key = 0xFF & cv2.waitKey(wait_ms)
     if key == 27:
         # ESC: quit

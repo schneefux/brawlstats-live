@@ -25,20 +25,21 @@ class StreamWatcher(object):
             VersusPipe(),
             DebugSink()))
 
-    def start(self, stream_config, fps, realtime):
+    def start(self, stream_config, fps, realtime, video_url=None):
         self.state = GameState(stream_config=stream_config)
         self._realtime_pipeline.start()
         self._deferred_pipeline.start()
 
-        streams = streamlink.streams(stream_config.url)
-        stream = streams.get(str(stream_config.resolution) + "p") \
-            or streams.get("best")
-        if stream is None:
-            raise Exception("Stream is invalid", stream_config.url)
+        if video_url is None:
+            streams = streamlink.streams(stream_config.url)
+            stream = streams.get(str(stream_config.resolution) + "p") \
+                or streams.get("best")
+            if stream is None:
+                raise Exception("Stream is invalid", stream_config.url)
+            video_url = stream.url
 
         self._buffer = VideoBuffer()
-        self._buffer.start(
-            stream, fps, stream_config.resolution, realtime)
+        self._buffer.start(video_url, fps, stream_config.resolution, realtime)
 
     def stop(self):
         self._deferred_pipeline.stop()
