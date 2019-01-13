@@ -17,6 +17,7 @@ def image(name):
     screen_box = ((0, 0),
                   (frame.shape[1], frame.shape[0]))
     stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
                                  screen_box=screen_box)
     return frame, stream_config
 
@@ -39,7 +40,9 @@ def test_with_cached_position():
     frame = image("versus_colt-tara-mortis-shelly-mortis-tara")[0]
 
     screen_box = ((8, 8), (frame.shape[1]-8, frame.shape[0]-8))
-    stream_config = StreamConfig(resolution=480, screen_box=screen_box)
+    stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
+                                 screen_box=screen_box)
 
     # first classification
     label, position = m.classify(frame, stream_config)[0]
@@ -53,5 +56,7 @@ def test_with_cached_position():
 
     # again with cached position, but box is shifted by 10px
     screen_box = ((16, 16), (frame.shape[1], frame.shape[0]))
-    stream_config = StreamConfig(resolution=480, screen_box=screen_box)
+    stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
+                                 screen_box=screen_box)
     assert m.classify(frame, stream_config)[0] == (label, position)

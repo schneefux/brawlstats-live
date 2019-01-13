@@ -33,9 +33,10 @@ from pipe.versus_pipe import VersusPipe
 ])
 def test_should_place_into_teams(data, teams):
     stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.VERSUS)
+                      screen=Screen.GEMGRAB_VERSUS)
     pipe = VersusPipe()
     pipe.start()
     pipe._matcher.classify = lambda *_: data
@@ -48,9 +49,10 @@ def test_should_place_into_teams(data, teams):
 
 def test_should_noop_on_no_match(monkeypatch):
     stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.VERSUS)
+                      screen=Screen.GEMGRAB_VERSUS)
     pipe = VersusPipe()
     pipe.start()
     monkeypatch.setattr(cv2, "imwrite", lambda *_: None)

@@ -10,6 +10,7 @@ from state.stream_config import StreamConfig
 from pipe.screen_pipe import ScreenPipe
 
 stream_config = StreamConfig(resolution=480,
+                             max_fps=0,
                              screen_box=((0, 0), (852, 480)))
 
 def test_should_change_screen_on_no_match():
