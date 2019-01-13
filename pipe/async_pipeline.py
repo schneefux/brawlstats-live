@@ -32,14 +32,14 @@ class AsyncPipeline(Sink):
         self.running = False
 
     def process(self, frame, state):
-        self._state = state
         try:
-            self._queue.put_nowait(frame)
+            self._queue.put_nowait((frame, state))
         except queue.Full:
             logging.warning(
                 "async pipeline queue is full, dropping frame")
         return {}
 
+    @property
     def processing(self):
         return not self._queue.empty()
 
@@ -50,9 +50,9 @@ class AsyncPipeline(Sink):
 
     def _process_async_forever(self):
         while self.running:
-            frame = self._queue.get()
+            frame, state = self._queue.get()
             for pipe in self.pipes:
-                transaction_state = evolve(self._state, **self._changes)
+                transaction_state = evolve(state, **self._changes)
                 self._changes = {
                     **self._changes,
                     **pipe.process(frame, transaction_state)

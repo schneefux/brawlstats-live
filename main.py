@@ -33,10 +33,12 @@ if args.url is None:
             twitch.get_game_id("Brawl Stars")))
 
 stream_config = StreamConfig(
-    resolution=config.stream_resolution, url=args.url)
+    resolution=config.stream_resolution,
+    max_fps=config.max_fps,
+    url=args.url)
 
 watcher = StreamWatcher()
-watcher.start(stream_config, config.max_fps,
+watcher.start(stream_config,
     block_operations=not args.live,
     video_url=args.url if args.file else None)
 
@@ -72,7 +74,7 @@ while watcher.running:
                         (255, 0, 0), 2)
     cv2.imshow("preview", preview)
 
-    s_until_next = 1.0/config.max_fps - (time.time()-state.timestamp)
+    s_until_next = 1.0/state.stream_config.max_fps - (time.time()-state.timestamp)
     wait_ms = 1 if not args.live else max(1, int(1000*s_until_next))
     key = 0xFF & cv2.waitKey(wait_ms)
     if key == 27:

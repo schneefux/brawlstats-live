@@ -25,7 +25,7 @@ class StreamWatcher(object):
             VersusPipe(),
             DebugSink()))
 
-    def start(self, stream_config, fps, block_operations, video_url=None):
+    def start(self, stream_config, block_operations, video_url=None):
         self._block_deferred_pipeline = block_operations
         self.state = GameState(stream_config=stream_config)
         self._realtime_pipeline.start()
@@ -40,7 +40,8 @@ class StreamWatcher(object):
             video_url = stream.url
 
         self._buffer = VideoBuffer()
-        self._buffer.start(video_url, fps, stream_config.resolution, block_read=block_operations)
+        self._buffer.start(video_url, stream_config.max_fps,
+            stream_config.resolution, block_read=block_operations)
 
     def stop(self):
         self._deferred_pipeline.stop()
@@ -53,7 +54,9 @@ class StreamWatcher(object):
     def process(self):
         frame = self._buffer.get()
 
-        new_state = evolve(self.state, timestamp=time.time())
+        new_state = evolve(self.state,
+            timestamp=time.time(),
+            seconds=self._buffer.seconds)
 
         # process sync tasks
         changes = self._realtime_pipeline.process(frame, new_state)
@@ -63,7 +66,7 @@ class StreamWatcher(object):
         self._deferred_pipeline.process(frame, new_state)
 
         # block if not watching a live stream
-        while self._block_deferred_pipeline and self._deferred_pipeline.processing():
+        while self._block_deferred_pipeline and self._deferred_pipeline.processing:
             pass
 
         # get changes from this frame (if blocking) or previous frame

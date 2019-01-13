@@ -35,9 +35,11 @@ class DebugSink(Sink):
             fps = len(self._durations) / sum(self._durations)
 
         logging.debug(
+            "%.2fs: " +
             "screen: %s (last result: %s), " +
             "%s vs. %s, " +
             "%2.2f max fps",
+            state.seconds,
             state.screen or "unknown",
             state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",

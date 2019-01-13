@@ -22,6 +22,7 @@ class VideoBuffer(object):
         self._block_read = block_read
         self._fps = fps
         self._buffer = queue.Queue(self._fps * self.buffer_seconds)
+        self.seconds = 0.0
         self._start_pipe(url, resolution)
         while self._buffer.empty():
             pass
@@ -92,4 +93,6 @@ class VideoBuffer(object):
                 self._buffer.get()
 
     def get(self):
-        return self._buffer.get()
+        frame = self._buffer.get()
+        self.seconds += 1.0 / self._fps
+        return frame
