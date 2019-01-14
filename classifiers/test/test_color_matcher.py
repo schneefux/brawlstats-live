@@ -5,9 +5,6 @@ import pytest
 from state.stream_config import StreamConfig
 from classifiers.color_matcher import ColorMatcher, ColorRange
 
-def matcher():
-    return ColorMatcher(ColorRange.DAMAGE)
-
 def image(name):
     frame = cv2.imread("test_images/{}.png".format(name))
     screen_box = ((0, 0),
@@ -25,5 +22,30 @@ def image(name):
     ("ingame_4", False),
     ("ingame_5", True),
 ])
-def test_match(name, matches):
-    assert matcher().classify(*image(name)) == matches
+def test_damage(name, matches):
+    assert ColorMatcher(ColorRange.DAMAGE())\
+        .classify(*image(name))[0] == matches
+    
+
+@pytest.mark.parametrize("name,percentage", [
+    ("ingame_3", 0.6),
+    ("ingame_4", 1.0),
+    ("ingame_5", 0.0),
+    ("ingame_6", 1.0),
+])
+def test_gembar_blue(name, percentage):
+    assert round(ColorMatcher(ColorRange.GEMBAR_BLUE())\
+        .classify(*image(name))[1], 1) == percentage
+
+    
+@pytest.mark.parametrize("name,percentage", [
+    ("ingame_3", 0.7),
+    ("ingame_4", 0.0),
+    ("ingame_5", 0.4),
+    ("ingame_6", 0.3),
+])
+def test_match(name, percentage):
+    assert round(ColorMatcher(ColorRange.GEMBAR_RED())\
+        .classify(*image(name))[1], 1) == percentage
+
+    
