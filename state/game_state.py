@@ -12,3 +12,4 @@ class GameState(object):
     last_match_result = attrib(type=MatchResult, default=None)
     blue_team = attrib(type=list, default=[])
     red_team = attrib(type=list, default=[])
+    taking_damage = attrib(type=bool, default=False)

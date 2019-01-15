@@ -38,13 +38,15 @@ class DebugSink(Sink):
             "%.2fs: " +
             "screen: %s (last result: %s), " +
             "%s vs. %s, " +
-            "%2.2f max fps",
+            "%2.2f max fps " +
+            "%s",
             state.seconds,
             state.screen or "unknown",
             state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",
             ",".join([b.name for b in state.red_team]) or "unknown",
-            fps
+            fps,
+            "(taking damage)" if state.taking_damage else ""
         )
 
         return {}

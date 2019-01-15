@@ -37,9 +37,9 @@ class ColorRange(object):
     @staticmethod
     def DAMAGE():
         return ColorRange(
-            np.array([169, 128, 128], dtype=np.uint8),
-            np.array([189, 255, 255], dtype=np.uint8),
-            0.3,
+            np.array([135, 120, 110], dtype=np.uint8),
+            np.array([180, 180, 180], dtype=np.uint8),
+            0.4,
             ((0.0, 0.0), (1.0, 1.0)))
 
     @staticmethod

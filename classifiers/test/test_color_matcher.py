@@ -21,6 +21,7 @@ def image(name):
     ("ingame_3", False),
     ("ingame_4", False),
     ("ingame_5", True),
+    ("ingame_6", False),
 ])
 def test_damage(name, matches):
     assert ColorMatcher(ColorRange.DAMAGE())\
