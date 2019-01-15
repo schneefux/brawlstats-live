@@ -10,6 +10,8 @@ from pipe.debug_sink import DebugSink
 from pipe.screen_pipe import ScreenPipe
 from pipe.versus_pipe import VersusPipe
 from pipe.device_pipe import DevicePipe
+from pipe.damage_pipe import DamagePipe
+from pipe.gembar_pipe import GembarPipe
 
 from state.game_state import GameState
 
@@ -20,7 +22,9 @@ class StreamWatcher(object):
     def __init__(self):
         self._realtime_pipeline = SyncPipeline((
             DevicePipe(),
-            ScreenPipe()))
+            ScreenPipe(),
+            DamagePipe(),
+            GembarPipe()))
         self._deferred_pipeline = AsyncPipeline((
             VersusPipe(),
             DebugSink()))

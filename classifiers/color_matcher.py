@@ -10,6 +10,10 @@ class ColorMatcher(Matcher):
         self._color_range = color_range
 
     def classify(self, frame, stream_config):
+        screen_box = stream_config.screen_box
+        frame = frame[screen_box[0][1]:screen_box[1][1],
+                      screen_box[0][0]:screen_box[1][0]]
+
         x0 = int(self._color_range.box[0][0] * frame.shape[1])
         x1 = int(self._color_range.box[1][0] * frame.shape[1])
         y0 = int(self._color_range.box[0][1] * frame.shape[0])
@@ -41,19 +45,3 @@ class ColorRange(object):
             np.array([180, 180, 180], dtype=np.uint8),
             0.4,
             ((0.0, 0.0), (1.0, 1.0)))
-
-    @staticmethod
-    def GEMBAR_BLUE():
-        return ColorRange(
-            np.array([80, 110, 230], dtype=np.uint8),
-            np.array([100, 255, 255], dtype=np.uint8),
-            0.3,
-            ((55/852.0, 20/420.0), (210/852.0, 25/420.0)))
-
-    @staticmethod
-    def GEMBAR_RED():
-        return ColorRange(
-            np.array([170, 200, 180], dtype=np.uint8),
-            np.array([180, 255, 255], dtype=np.uint8),
-            0.3,
-            ((641/852.0, 20/420.0), (797/852.0, 25/420.0)))

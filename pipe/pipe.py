@@ -1,12 +1,12 @@
 class Pipe(object):
     """
-    Abstract processing step that returns a modified state.
+    Abstract processing step that returns a state modification.
     """
     def start(self):
         """
         Set up the pipe.
         """
-        raise NotImplementedError()
+        pass
 
     def process(self, frame, state):
         """

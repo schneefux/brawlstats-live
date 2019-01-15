@@ -37,7 +37,7 @@ class DebugSink(Sink):
         logging.debug(
             "%.2fs: " +
             "screen: %s (last result: %s), " +
-            "%s vs. %s, " +
+            "%s vs. %s, (%s / %s) " +
             "%2.2f max fps " +
             "%s",
             state.seconds,
@@ -45,6 +45,8 @@ class DebugSink(Sink):
             state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",
             ",".join([b.name for b in state.red_team]) or "unknown",
+            str(state.blue_gems) if state.blue_gems < 10 else "full",
+            str(state.red_gems) if state.red_gems < 10 else "full",
             fps,
             "(taking damage)" if state.taking_damage else ""
         )
