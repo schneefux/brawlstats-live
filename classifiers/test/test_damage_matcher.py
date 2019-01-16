@@ -3,7 +3,7 @@ import cv2
 import pytest
 
 from state.stream_config import StreamConfig
-from classifiers.color_matcher import ColorMatcher, ColorRange
+from classifiers.damage_matcher import DamageMatcher
 
 def image(name):
     frame = cv2.imread("test_images/{}.png".format(name))
@@ -24,5 +24,5 @@ def image(name):
     ("ingame_6", False),
 ])
 def test_damage(name, matches):
-    assert ColorMatcher(ColorRange.DAMAGE())\
-        .classify(*image(name))[0] == matches
+    assert DamageMatcher()\
+        .classify(*image(name)) == matches
