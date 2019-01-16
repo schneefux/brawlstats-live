@@ -7,9 +7,7 @@ class DamagePipe(Pipe):
         self._matcher = ColorMatcher(ColorRange.DAMAGE())
 
     def process(self, frame, state):
-        if state.stream_config.screen_box is None \
-            or state.screen is None \
-            or "ingame" not in state.screen.name.lower():
+        if state.stream_config.screen_box is None:
             return {}
 
         matches = self._matcher.classify(frame, state.stream_config)[0]
