@@ -36,13 +36,12 @@ class DebugSink(Sink):
 
         logging.debug(
             "%.2fs: " +
-            "screen: %s (last result: %s), " +
+            "screen: %s, " +
             "%s vs. %s, (%s / %s) " +
             "%2.2f max fps " +
             "%s",
             state.seconds,
             state.screen or "unknown",
-            state.last_match_result or "unknown",
             ",".join([b.name for b in state.blue_team]) or "unknown",
             ",".join([b.name for b in state.red_team]) or "unknown",
             str(state.blue_gems) if state.blue_gems < 10 else "full",
