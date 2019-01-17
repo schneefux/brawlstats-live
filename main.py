@@ -6,6 +6,7 @@ import random
 import logging
 import argparse
 import coloredlogs
+from attr import evolve
 from threading import Thread
 from flask import Flask, jsonify
 
@@ -20,6 +21,7 @@ parser.add_argument("-s", "--server", action="store_true")
 parser.add_argument("-f", "--file", action="store_true")
 parser.add_argument("-l", "--live", action="store_true")
 parser.add_argument("-r", "--random", action="store_true")
+parser.add_argument("-F", "--fullscreen", action="store_true")
 parser.add_argument("-u", "--url")
 args = parser.parse_args()
 
@@ -36,6 +38,10 @@ stream_config = StreamConfig(
     resolution=config.stream_resolution,
     max_fps=config.max_fps,
     url=args.url)
+
+if args.fullscreen:
+    stream_config = evolve(stream_config,
+        screen_box_sensitivity=0.0)
 
 watcher = StreamWatcher()
 watcher.start(stream_config,

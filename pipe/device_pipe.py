@@ -9,50 +9,62 @@ class DevicePipe(Pipe):
     """
     Detect the embedded game screen inside the frame.
     """
-    def start(self):
-        self._movement_map = None
-        self._last_frame = None
-        self._decay = 0.2
-
     def process(self, frame, state):
-        if self._decay <= 0.05:
+        stream_config = state.stream_config
+        # TODO move the below code into a classifier/
+
+        if stream_config.screen_box_sensitivity == 0.0:
+            # full screen mode was requested
+            return {
+                "stream_config": evolve(stream_config,
+                    # skip this branch time
+                    screen_box_sensitivity=0.01,
+                    screen_box=((0, 0), frame.shape[:2][::-1]))
+            }
+
+        if stream_config.screen_box_sensitivity <= 0.05:
             return {}
+
+        if stream_config.previous_frame is None:
+            # initialize
+            return {
+                "stream_config": evolve(stream_config,
+                    movement_frame=np.zeros(frame.shape[:2], np.float),
+                    previous_frame=frame)
+            }
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        if self._last_frame is None:
-            self._movement_map = np.zeros(gray_frame.shape,
-                                          np.float)
-            self._last_frame = gray_frame
-            return {}
-
-        diff = cv2.absdiff(gray_frame, self._last_frame)
+        gray_last_frame = cv2.cvtColor(stream_config.previous_frame,
+            cv2.COLOR_BGR2GRAY)
+        diff = cv2.absdiff(gray_frame, gray_last_frame)
         # ignore noise from compression artifacts
         diff = cv2.threshold(diff, 8, 255, cv2.THRESH_BINARY)[1]
 
-        total_pixels   = diff.shape[0] * diff.shape[1]
-        changed_pixels = np.count_nonzero(diff)
-        changed_ratio  = float(changed_pixels) / total_pixels
-
+        changed_ratio = np.count_nonzero(diff) / diff.size
         # assuming that the game's screen takes up at least 1/3
         if changed_ratio < 0.33:
             return {}
 
+        movement_frame = stream_config.movement_frame
         cv2.accumulateWeighted(diff,
-                self._movement_map,
-                changed_ratio * self._decay)
+            movement_frame,
+            changed_ratio * stream_config.screen_box_sensitivity)
 
-        if self._movement_map.max() == 0:
+        if movement_frame.max() == 0:
             return {}
+        
+        stream_config = evolve(stream_config,
+            movement_frame=movement_frame)
 
         # convert frame of floats to 1 channel gray
         movement_frame = cv2.convertScaleAbs(
-            self._movement_map,
-            alpha=255.0/self._movement_map.max())
+            movement_frame,
+            alpha=255.0/movement_frame.max())
 
         # smoothen for better contour performance
-        movement_frame = cv2.blur(
-            movement_frame, (int(gray_frame.shape[0]/10),
-                             int(gray_frame.shape[1]/5)))
+        movement_frame = cv2.blur(movement_frame,
+            (int(gray_frame.shape[0]/10),
+             int(gray_frame.shape[1]/5)))
 
         movement_frame = cv2.threshold(
             movement_frame,
@@ -78,15 +90,15 @@ class DevicePipe(Pipe):
             # all devices are assumed to be landscape
             return {}
 
-        self._last_frame = gray_frame
-
-        stream_config = evolve(state.stream_config,
-                               screen_box=((x1, y1),
-                                           (x1+w, y1+h)))
+        stream_config = evolve(stream_config,
+            previous_frame=frame,
+            screen_box=((x1, y1),
+                        (x1+w, y1+h)))
 
         # slowly freeze the screen box after a good full screen transition
         if state.screen == Screen.LOADING:
-            self._decay /= 2.0
+            stream_config = evolve(stream_config,
+                screen_box_sensitivity=stream_config.screen_box_sensitivity / 2.0)
 
         return {
             "stream_config": stream_config
