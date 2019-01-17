@@ -46,7 +46,7 @@ class RedGembarMatcher(Matcher):
         np.array([180, 255, 240], dtype=np.uint8),
     )
     red_inactive_range = (
-        np.array([160, 220, 10], dtype=np.uint8),
+        np.array([160, 220, 30], dtype=np.uint8),
         np.array([180, 255, 100], dtype=np.uint8),
     )
 
@@ -57,7 +57,7 @@ class RedGembarMatcher(Matcher):
 
         y0 = int(frame.shape[0] * 0.03)
         y1 = int(frame.shape[0] * 0.07)
-        frame = frame[y0:y1, int(frame.shape[1]*2/3):]
+        frame = frame[y0:y1, int(frame.shape[1]*3/4):]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         active_mask = cv2.inRange(hsv, self.red_active_range[0],
                                   self.red_active_range[1])
