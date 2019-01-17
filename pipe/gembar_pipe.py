@@ -1,6 +1,6 @@
 from pipe.pipe import Pipe
 from state.enum.screen import Screen
-from classifiers.gembar_matcher import BlueGembarMatcher, RedGembarMatcher
+from matcher.gembar_matcher import BlueGembarMatcher, RedGembarMatcher
 
 class GembarPipe(Pipe):
     def __init__(self):

@@ -10,8 +10,8 @@ import logging
 import numpy as np
 from math import sqrt
 
-from classifiers.matcher import Matcher
-from classifiers.template import Template, TemplateImage
+from matcher.matcher import Matcher
+from matcher.template import Template, TemplateImage
 
 class TemplateMatcher(Matcher):
     """

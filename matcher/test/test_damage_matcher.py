@@ -3,7 +3,7 @@ import cv2
 import pytest
 
 from state.stream_config import StreamConfig
-from classifiers.damage_matcher import DamageMatcher
+from matcher.damage_matcher import DamageMatcher
 
 def image(name):
     frame = cv2.imread("test_images/{}.png".format(name))

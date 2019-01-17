@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from classifiers.matcher import Matcher
+from matcher.matcher import Matcher
 
 class DamageMatcher(Matcher):
     damage_range = (

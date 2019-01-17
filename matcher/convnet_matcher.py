@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
 from keras.backend import image_data_format
 
-from classifiers.matcher import Matcher
+from matcher.matcher import Matcher
 
 class ConvnetMatcher(Matcher):
     min_confidence = 0.90

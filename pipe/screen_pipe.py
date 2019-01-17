@@ -2,7 +2,7 @@ from attr import evolve
 
 from pipe.pipe import Pipe
 from state.enum.screen import Screen
-from classifiers.convnet_matcher import ConvnetMatcher
+from matcher.convnet_matcher import ConvnetMatcher
 
 from model.screen.config import shape
 

@@ -1,6 +1,6 @@
 from pipe.pipe import Pipe
 from state.enum.screen import Screen
-from classifiers.damage_matcher import DamageMatcher
+from matcher.damage_matcher import DamageMatcher
 
 class DamagePipe(Pipe):
     def __init__(self):

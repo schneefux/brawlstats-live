@@ -4,7 +4,7 @@ import pytest
 
 from state.enum.screen import Screen
 from state.stream_config import StreamConfig
-from classifiers.convnet_matcher import ConvnetMatcher
+from matcher.convnet_matcher import ConvnetMatcher
 
 from model.screen.config import shape
 

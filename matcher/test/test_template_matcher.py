@@ -4,7 +4,7 @@ import pytest
 from attr import evolve
 
 from state.stream_config import StreamConfig
-from classifiers.template_matcher import TemplateMatcher
+from matcher.template_matcher import TemplateMatcher
 
 def matcher(label):
     matcher = TemplateMatcher()

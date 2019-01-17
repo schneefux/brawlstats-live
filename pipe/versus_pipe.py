@@ -4,7 +4,7 @@ import logging
 from pipe.pipe import Pipe
 from state.enum.screen import Screen
 from state.enum.brawler import Brawler
-from classifiers.template_matcher import TemplateMatcher
+from matcher.template_matcher import TemplateMatcher
 
 class VersusPipe(Pipe):
     """
@@ -31,7 +31,6 @@ class VersusPipe(Pipe):
                 "but no brawler template matched")
             return {}
 
-        screen_box = state.stream_config.screen_box
         ys = [match[1][1] for match in matches]
         average_y = sum(ys) / len(ys)
         blue_team = [Brawler(match[0]) for match in matches

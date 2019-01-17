@@ -3,7 +3,7 @@ import cv2
 import pytest
 
 from state.stream_config import StreamConfig
-from classifiers.gembar_matcher import BlueGembarMatcher, RedGembarMatcher
+from matcher.gembar_matcher import BlueGembarMatcher, RedGembarMatcher
 
 def image(name):
     frame = cv2.imread("test_images/{}.png".format(name))
