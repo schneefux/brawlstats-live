@@ -12,12 +12,12 @@ def test_should_set_state():
     state = GameState(stream_config=stream_config,
                       screen=Screen.GEMGRAB_INGAME)
     pipe = GembarPipe()
-    pipe._matcher_blue.classify = lambda *_: 0.2
+    pipe._matcher_blue.classify = lambda *_: 0.28
     pipe._matcher_red.classify = lambda *_: 0.5
 
     changes = pipe.process(None, state)
     assert changes == {
-        "blue_gems": 2,
+        "blue_gems": 3,
         "red_gems": 5,
     }
 
