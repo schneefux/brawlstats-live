@@ -7,8 +7,6 @@ import logging
 import argparse
 import coloredlogs
 from attr import evolve
-from threading import Thread
-from flask import Flask, jsonify
 
 from api.twitch import TwitchAPIClient
 from stream_watcher import StreamWatcher
@@ -17,7 +15,6 @@ from state.stream_config import StreamConfig
 coloredlogs.install(level="DEBUG")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--server", action="store_true")
 parser.add_argument("-f", "--file", action="store_true")
 parser.add_argument("-l", "--live", action="store_true")
 parser.add_argument("-r", "--random", action="store_true")
@@ -49,26 +46,6 @@ watcher.start(stream_config,
     video_url=args.url if args.file else None)
 
 logging.info("Watching %s", args.url)
-
-if args.server:
-    app = Flask(__name__)
-
-    @app.route("/state")
-    def get_state():
-        return jsonify({
-            "screen": watcher.state.screen.name \
-                if watcher.state.screen is not None else None,
-            "last_match_result": watcher.state.last_match_result.name \
-                if watcher.state.last_match_result is not None else None,
-            "blue_team": [b.name for b in watcher.state.blue_team] \
-                if watcher.state.blue_team is not None else [],
-            "red_team": [b.name for b in watcher.state.red_team] \
-                if watcher.state.red_team is not None else []
-        })
-
-    thread = Thread(target=app.run)
-    thread.daemon = True
-    thread.start()
 
 while watcher.running:
     frame, state = watcher.process()

@@ -1,0 +1,112 @@
+<!doctype html>
+  <head>
+    <meta charset="utf-8">
+    <title>statlify.stream demo</title>
+  </head>
+  <body>
+    <main>
+      <div id="event-log">
+        <p id="data-status">waiting</p>
+        <p style="display: flex; flex-direction: row; justify-content: space-between;">
+          <span id="data-blue"></span>
+          <span>VS</span>
+          <span id="data-red"></span>
+        </p>
+        <div id="gem-graph"></div>
+        <ul id="event-log-ul"></ul>
+      </div>
+    </main>
+
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.slim.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.43.2/plotly.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+      const socket = io();
+      socket.on("connect", () => console.log("connected"));
+      socket.on("disconnect", () => console.log("disconnected"));
+      socket.on("error", (error) => console.log("error", error));
+
+      function logEvent(text) {
+        const logEl = document.getElementById("event-log-ul");
+        const eventEl = document.createElement("li");
+        const eventText = document.createTextNode(text);
+        eventEl.appendChild(eventText);
+        logEl.appendChild(eventEl);
+      }
+
+      Plotly.plot("gem-graph", [{
+        x: [],
+        y: [],
+        mode: "lines",
+        line: {color: "blue"},
+        name: "Blue Gems"
+      }, {
+        x: [],
+        y: [],
+        mode: "lines",
+        line: {color: "red"},
+        name: "Red Gems"
+      }], {
+        yaxis: {
+          range: [0, 10],
+        },
+      });
+
+      function updateState(state) {
+        const blueEl = document.getElementById("data-blue");
+        const redEl = document.getElementById("data-red");
+        const statusEl = document.getElementById("data-status");
+        blueEl.textContent = `${state.blue_team} (${state.blue_gems})`;
+        redEl.textContent = `(${state.red_gems}) ${state.red_team}`;
+        statusEl.textContent = state.ingame ? "ingame" : "waiting";
+
+        const time = new Date();
+        Plotly.extendTraces("gem-graph", {
+          x: [[time], [time]],
+          y: [[state.blue_gems], [state.red_gems]]
+        }, [0, 1])
+      }
+
+      let last = undefined;
+      socket.on("update", (state) => {
+        updateState(state);
+
+        if (last == undefined) {
+          last = state;
+          return;
+        }
+
+        if (last.taking_damage != state.taking_damage) {
+          if (state.taking_damage) {
+            logEvent("taking damage");
+          }
+        }
+
+        if (last.blue_gems != state.blue_gems) {
+          const diff = state.blue_gems - last.blue_gems;
+
+          if (diff > 0) {
+            logEvent(`blue collected ${diff} gems`);
+          } else {
+            logEvent(`blue lost ${-diff} gems`);
+          }
+        }
+
+        if (last.red_gems != state.red_gems) {
+          const diff = state.red_gems - last.red_gems;
+
+          if (diff > 0) {
+            logEvent(`red collected ${diff} gems`);
+          } else {
+            logEvent(`red lost ${-diff} gems`);
+          }
+        }
+
+        last = state;
+      });
+    })();
+    </script>
+  </body>
+</html>

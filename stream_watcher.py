@@ -12,6 +12,7 @@ from pipe.versus_pipe import VersusPipe
 from pipe.device_pipe import DevicePipe
 from pipe.damage_pipe import DamagePipe
 from pipe.gembar_pipe import GembarPipe
+from pipe.socketio_sink import SocketioSink
 
 from state.game_state import GameState
 
@@ -27,7 +28,8 @@ class StreamWatcher(object):
             GembarPipe()))
         self._deferred_pipeline = AsyncPipeline((
             VersusPipe(),
-            DebugSink()))
+            DebugSink(),
+            SocketioSink()))
 
     def start(self, stream_config, block_operations, video_url=None):
         self._block_deferred_pipeline = block_operations
