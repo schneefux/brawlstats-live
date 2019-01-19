@@ -39,7 +39,7 @@ class GembarMatcher(Matcher):
             active_pixels += np.count_nonzero(highlight_mask)
 
         total_pixels = active_pixels + inactive_pixels
-        return active_pixels / total_pixels if total_pixels > 0 else 0
+        return active_pixels / total_pixels if total_pixels > 0 else None
 
 
 class BlueGembarMatcher(GembarMatcher):

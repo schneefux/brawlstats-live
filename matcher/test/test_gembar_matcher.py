@@ -40,5 +40,9 @@ def test_gembar_red(name, percentage):
 
     
 def test_no_gembar():
-    assert RedGembarMatcher().classify(*image("loading_1")) == 0
-    assert BlueGembarMatcher().classify(*image("loading_1")) == 0
+    assert RedGembarMatcher().classify(*image("loading_1")) == None
+    assert BlueGembarMatcher().classify(*image("loading_1")) == None
+
+
+def test_ignore_gembar_flash():
+    assert BlueGembarMatcher().classify(*image("ingame_13")) == None

@@ -40,3 +40,14 @@ def test_should_ignore_wrong_screen():
 
     changes = pipe.process(None, state)
     assert changes == {}
+
+
+def test_should_ignore_failing_match():
+    state = GameState(stream_config=stream_config,
+                      screen=Screen.GEMGRAB_INGAME)
+    pipe = GembarPipe()
+    pipe._matcher_blue.classify = lambda *_: None
+    pipe._matcher_red.classify = lambda *_: None
+
+    changes = pipe.process(None, state)
+    assert changes == {}
