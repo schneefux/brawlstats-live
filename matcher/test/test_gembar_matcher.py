@@ -23,6 +23,7 @@ def image(name):
     ("ingame_10", 0.4),
     ("ingame_11", 0.3),
     ("ingame_12", 0.6),
+    ("ingame_14", 0.4),
 ])
 def test_gembar_blue(name, percentage):
     assert round(BlueGembarMatcher().classify(*image(name)), 1) == percentage
@@ -34,6 +35,7 @@ def test_gembar_blue(name, percentage):
     ("ingame_9", 0.1),
     ("ingame_10", 0.1),
     ("ingame_12", 1.0),
+    ("ingame_14", 0.2),
 ])
 def test_gembar_red(name, percentage):
     assert round(RedGembarMatcher().classify(*image(name)), 1) == percentage
