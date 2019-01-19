@@ -15,8 +15,8 @@ class GembarMatcher(Matcher):
         frame = frame[screen_box[0][1]:screen_box[1][1],
                       screen_box[0][0]:screen_box[1][0]]
 
-        y0 = int(frame.shape[0] * 0.03)
-        y1 = int(frame.shape[0] * 0.07)
+        y0 = int(frame.shape[0] * 0.02)
+        y1 = int(frame.shape[0] * 0.08)
 
         if self.is_left:
             frame = frame[y0:y1, :int(frame.shape[1]/4)]
@@ -44,15 +44,15 @@ class GembarMatcher(Matcher):
 class BlueGembarMatcher(GembarMatcher):
     # hsv: h between 0 and 180
     active_range = (
-        np.array([90, 215, 210], dtype=np.uint8),
-        np.array([115, 255, 255], dtype=np.uint8),
+        np.array([90, 220, 220], dtype=np.uint8),
+        np.array([120, 255, 255], dtype=np.uint8),
     )
     inactive_range = (
-        np.array([90, 215, 130], dtype=np.uint8),
-        np.array([115, 255, 165], dtype=np.uint8),
+        np.array([90, 230, 140], dtype=np.uint8),
+        np.array([120, 255, 170], dtype=np.uint8),
     )
     highlight_range = (
-        np.array([80, 130, 230], dtype=np.uint8),
+        np.array([90, 130, 230], dtype=np.uint8),
         np.array([120, 200, 255], dtype=np.uint8),
     )
     is_left = True
@@ -60,15 +60,15 @@ class BlueGembarMatcher(GembarMatcher):
         
 class RedGembarMatcher(GembarMatcher):
     active_range = (
-        np.array([150, 200, 140], dtype=np.uint8),
-        np.array([190, 255, 240], dtype=np.uint8),
+        np.array([170, 190, 200], dtype=np.uint8),
+        np.array([180, 255, 230], dtype=np.uint8),
     )
     inactive_range = (
-        np.array([160, 220, 30], dtype=np.uint8),
-        np.array([190, 255, 110], dtype=np.uint8),
+        np.array([170, 210, 90], dtype=np.uint8),
+        np.array([180, 255, 110], dtype=np.uint8),
     )
     highlight_range = (
-        np.array([150, 130, 230], dtype=np.uint8),
+        np.array([170, 170, 230], dtype=np.uint8),
         np.array([180, 200, 255], dtype=np.uint8),
     )
     is_left = False

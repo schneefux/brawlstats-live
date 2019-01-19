@@ -36,6 +36,7 @@ def test_gembar_blue(name, percentage):
     ("ingame_10", 0.1),
     ("ingame_12", 1.0),
     ("ingame_14", 0.2),
+    ("ingame_15", 0.1),
 ])
 def test_gembar_red(name, percentage):
     assert round(RedGembarMatcher().classify(*image(name)), 1) == percentage
@@ -48,3 +49,4 @@ def test_no_gembar():
 
 def test_ignore_gembar_flash():
     assert BlueGembarMatcher().classify(*image("ingame_13")) == None
+    assert BlueGembarMatcher().classify(*image("ingame_15")) == None
