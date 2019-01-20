@@ -3,9 +3,9 @@ import logging
 from attr import evolve
 from threading import Thread
 
-from pipe.sink import Sink
+from pipe.pipe import Pipe
 
-class AsyncPipeline(Sink):
+class AsyncPipeline(Pipe):
     """
     Defer execution of child pipes to a seperate thread
     and store the state mutation transaction.

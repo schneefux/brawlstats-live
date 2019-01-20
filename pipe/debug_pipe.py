@@ -3,9 +3,9 @@ import cv2
 import time
 import logging
 
-from pipe.sink import Sink
+from pipe.pipe import Pipe
 
-class DebugSink(Sink):
+class DebugPipe(Pipe):
     """
     Log.
     """
@@ -19,7 +19,7 @@ class DebugSink(Sink):
             self._durations = self._durations[1:]
 
         if state.stream_config.screen_box is not None and \
-                state.screen is None:
+                (state.screen is None or state.blue_gems == 10 or state.red_gems == 10):
             screen_box = state.stream_config.screen_box
             cut_frame = frame[screen_box[0][1]:screen_box[1][1],
                               screen_box[0][0]:screen_box[1][0]]

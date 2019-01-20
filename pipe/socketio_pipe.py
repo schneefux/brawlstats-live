@@ -6,10 +6,10 @@ from queue import Queue
 from threading import Thread
 from flask import Flask, render_template
 
-from pipe.sink import Sink
+from pipe.pipe import Pipe
 from state.enum.screen import Screen
 
-class SocketioSink(Sink):
+class SocketioPipe(Pipe):
     def start(self):
         self._sio = socketio.Server()
         self._app = Flask(__name__,

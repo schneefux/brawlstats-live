@@ -6,13 +6,13 @@ from api.video_buffer import VideoBuffer
 from pipe.pipe import Pipe
 from pipe.sync_pipeline import SyncPipeline
 from pipe.async_pipeline import AsyncPipeline
-from pipe.debug_sink import DebugSink
+from pipe.debug_pipe import DebugPipe
 from pipe.screen_pipe import ScreenPipe
 from pipe.versus_pipe import VersusPipe
 from pipe.device_pipe import DevicePipe
 from pipe.damage_pipe import DamagePipe
 from pipe.gembar_pipe import GembarPipe
-from pipe.socketio_sink import SocketioSink
+from pipe.socketio_pipe import SocketioPipe
 
 from state.game_state import GameState
 
@@ -28,8 +28,8 @@ class StreamWatcher(object):
             GembarPipe()))
         self._deferred_pipeline = AsyncPipeline((
             VersusPipe(),
-            DebugSink(),
-            SocketioSink()))
+            DebugPipe(),
+            SocketioPipe()))
 
     def start(self, stream_config, block_operations, video_url=None):
         self._block_deferred_pipeline = block_operations
