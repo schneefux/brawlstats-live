@@ -15,13 +15,12 @@ class GembarMatcher(Matcher):
         frame = frame[screen_box[0][1]:screen_box[1][1],
                       screen_box[0][0]:screen_box[1][0]]
 
-        y0 = int(frame.shape[0] * 0.02)
-        y1 = int(frame.shape[0] * 0.08)
+        y1 = int(frame.shape[0] * 0.1)
 
         if self.is_left:
-            frame = frame[y0:y1, :int(frame.shape[1]/4)]
+            frame = frame[:y1, :int(frame.shape[1]*0.3)]
         else:
-            frame = frame[y0:y1, int(frame.shape[1]/4*3):]
+            frame = frame[:y1, int(frame.shape[1]*0.7):]
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -38,7 +37,7 @@ class GembarMatcher(Matcher):
         active_pixels += np.count_nonzero(highlight_mask)
 
         total_pixels = active_pixels + inactive_pixels
-        return active_pixels / total_pixels if total_pixels / frame.size >= 0.05 else None
+        return active_pixels / total_pixels if total_pixels / frame.size >= 0.025 else None
 
 
 class BlueGembarMatcher(GembarMatcher):
@@ -60,7 +59,7 @@ class BlueGembarMatcher(GembarMatcher):
         
 class RedGembarMatcher(GembarMatcher):
     active_range = (
-        np.array([170, 190, 200], dtype=np.uint8),
+        np.array([170, 190, 190], dtype=np.uint8),
         np.array([180, 255, 230], dtype=np.uint8),
     )
     inactive_range = (
