@@ -6,8 +6,8 @@
   <body>
     <main>
       <div id="event-log">
-        <p id="data-status">waiting</p>
-        <p style="display: flex; flex-direction: row; justify-content: space-between;">
+        <p><span id="data-status"></span> <span id="data-screen"></span></p>
+        <p>
           <span id="data-blue"></span>
           <span>VS</span>
           <span id="data-red"></span>
@@ -62,9 +62,11 @@
         const blueEl = document.getElementById("data-blue");
         const redEl = document.getElementById("data-red");
         const statusEl = document.getElementById("data-status");
+        const screenEl = document.getElementById("data-screen");
         blueEl.textContent = `${state.blue_team} (${state.blue_gems})`;
         redEl.textContent = `(${state.red_gems}) ${state.red_team}`;
         statusEl.textContent = state.ingame ? "ingame" : "waiting";
+        screenEl.textContent = `(${state.screen ? state.screen : 'unknown'})`;
 
         timestamps3m.push(new Date(state.timestamp));
         blueGems3m.push(state.blue_gems);
