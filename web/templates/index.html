@@ -33,7 +33,7 @@
         const eventEl = document.createElement("li");
         const eventText = document.createTextNode(text);
         eventEl.appendChild(eventText);
-        logEl.appendChild(eventEl);
+        logEl.insertBefore(eventEl, logEl.childNodes[0]);
       }
 
       Plotly.plot("gem-graph", [{
