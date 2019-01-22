@@ -41,6 +41,7 @@ class SocketioPipe(Pipe):
 
     def process(self, frame, state):
         self._message_queue.put({
+            "timestamp": state.timestamp,
             "ingame": state.screen == Screen.GEMGRAB_INGAME,
             "blue_team": [b.name for b in state.blue_team],
             "blue_gems": state.blue_gems,

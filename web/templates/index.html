@@ -54,6 +54,10 @@
         },
       });
 
+      const timestamps3m = [];
+      const blueGems3m = [];
+      const redGems3m = [];
+
       function updateState(state) {
         const blueEl = document.getElementById("data-blue");
         const redEl = document.getElementById("data-red");
@@ -62,11 +66,22 @@
         redEl.textContent = `(${state.red_gems}) ${state.red_team}`;
         statusEl.textContent = state.ingame ? "ingame" : "waiting";
 
-        const time = new Date();
-        Plotly.extendTraces("gem-graph", {
-          x: [[time], [time]],
-          y: [[state.blue_gems], [state.red_gems]]
-        }, [0, 1])
+        timestamps3m.push(new Date(state.timestamp));
+        blueGems3m.push(state.blue_gems);
+        redGems3m.push(state.red_gems);
+
+        const earliest = timestamps3m[0];
+        const latest = timestamps3m[timestamps3m.length-1];
+        if (latest - earliest > 3*60*1000) {
+          timestamps3m.splice(0, 1);
+          blueGems3m.splice(0, 1);
+          redGems3m.splice(0, 1);
+        }
+
+        Plotly.update("gem-graph", {
+          x: [timestamps3m],
+          y: [blueGems3m, redGems3m]
+        });
       }
 
       let last = undefined;
