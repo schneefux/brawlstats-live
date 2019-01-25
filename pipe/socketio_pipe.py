@@ -2,7 +2,7 @@ import json
 import socketio
 import eventlet
 import eventlet.wsgi
-from queue import Queue
+from queue import Queue, Empty
 from threading import Thread
 from flask import Flask, render_template
 
@@ -29,7 +29,10 @@ class SocketioPipe(Pipe):
     
     def _send_messages_forever(self):
         while True:
-            self._sio.emit("update", self._message_queue.get())
+            try:
+                self._sio.emit("update", self._message_queue.get_nowait())
+            except Empty:
+                pass
             eventlet.sleep()
 
     def _run_server(self):
@@ -40,15 +43,17 @@ class SocketioPipe(Pipe):
         return render_template("index.html")
 
     def process(self, frame, state):
-        self._message_queue.put({
-            "timestamp": state.timestamp,
-            "ingame": state.screen == Screen.GEMGRAB_INGAME,
-            "screen": state.screen.name if state.screen else None,
-            "blue_team": [b.name for b in state.blue_team],
-            "blue_gems": state.blue_gems,
-            "red_gems": state.red_gems,
-            "red_team": [b.name for b in state.red_team],
-            "taking_damage": state.taking_damage,
-        })
+        if state.last_change is not None and \
+            state.timestamp - state.last_change > 0.2: # s
+            self._message_queue.put({
+                "timestamp": state.timestamp,
+                "ingame": state.screen == Screen.GEMGRAB_INGAME,
+                "screen": state.screen.name if state.screen else None,
+                "blue_team": [b.name for b in state.blue_team],
+                "blue_gems": state.blue_gems,
+                "red_gems": state.red_gems,
+                "red_team": [b.name for b in state.red_team],
+                "taking_damage": state.taking_damage,
+            })
 
         return {}

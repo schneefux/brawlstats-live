@@ -22,15 +22,17 @@ class ScreenPipe(Pipe):
         if state.stream_config.screen_box is None:
             return {}
 
-        changes = {
-            "screen": None
-        }
-
         matches = self._matcher.classify(frame, state.stream_config)
-        if len(matches) > 0:
-            screen = matches[0][0]
-            changes = {
-                "screen": screen
+        if len(matches) == 0:
+            return {
+                "screen": None
             }
 
-        return changes
+        if len(matches) > 0:
+            screen = matches[0][0]
+            if screen != state.screen:
+                return {
+                    "screen": screen
+                }
+            else:
+                return {}

@@ -59,6 +59,7 @@ class StreamWatcher(object):
 
     def process(self):
         frame = self._buffer.get()
+        changes_len = 0
 
         new_state = evolve(self.state,
             timestamp=time.time(),
@@ -67,6 +68,7 @@ class StreamWatcher(object):
         # process sync tasks
         changes = self._realtime_pipeline.process(frame, new_state)
         new_state = evolve(new_state, **changes)
+        changes_len += len([k for k in changes.keys() if k != "stream_config"])
 
         # push tasks to async pipeline
         self._deferred_pipeline.process(frame, new_state)
@@ -78,6 +80,10 @@ class StreamWatcher(object):
         # get changes from this frame (if blocking) or previous frame
         changes = self._deferred_pipeline.reset_changes()
         new_state = evolve(new_state, **changes)
+        changes_len += len([k for k in changes.keys() if k != "stream_config"])
+
+        if changes_len > 0:
+            new_state = evolve(new_state, last_change=new_state.timestamp)
 
         self.state = new_state
         return frame.copy(), self.state

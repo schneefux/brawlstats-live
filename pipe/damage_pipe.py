@@ -12,6 +12,10 @@ class DamagePipe(Pipe):
 
         matches = self._matcher.classify(frame,
             state.stream_config)
-        return {
-            "taking_damage": matches
-        }
+
+        if matches != state.taking_damage:
+            return {
+                "taking_damage": matches
+            }
+        else:
+            return {}

@@ -25,8 +25,12 @@ class GembarPipe(Pipe):
         
         changes = {}
         if blue_ratio is not None:
-            changes["blue_gems"] = round(10*blue_ratio)
+            blue_gems = round(10*blue_ratio)
+            if blue_gems != state.blue_gems:
+                changes["blue_gems"] = blue_gems
         if red_ratio is not None:
-            changes["red_gems"] = round(10*red_ratio)
+            red_gems = round(10*red_ratio)
+            if red_gems != state.red_gems:
+                changes["red_gems"] = round(10*red_ratio)
 
         return changes
