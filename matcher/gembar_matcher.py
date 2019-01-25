@@ -37,11 +37,6 @@ class GembarMatcher(Matcher):
         active_pixels += np.count_nonzero(highlight_mask)
 
         total_pixels = active_pixels + inactive_pixels
-#        cv2.imshow("f", frame)
-#        cv2.imshow("m1", active_mask)
- #       cv2.imshow("m2", inactive_mask)
-  #      cv2.imshow("m3", highlight_mask)
-        #cv2.waitKey(5000)
         return active_pixels / total_pixels if total_pixels / frame.size >= 0.03 else None
 
 
