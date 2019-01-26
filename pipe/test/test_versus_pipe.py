@@ -47,6 +47,23 @@ def test_should_place_into_teams(data, teams):
     assert set(changes["blue_team"]) == set(teams[1])
 
 
+def test_should_noop_on_too_few_brawlers():
+    stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
+                                 screen_box=((10, 10), (842, 470)))
+    state = GameState(stream_config=stream_config,
+                      screen=Screen.GEMGRAB_VERSUS)
+    pipe = VersusPipe()
+    pipe.start()
+    pipe._matcher.classify = lambda *_: (
+        ('colt', (249, 315)), ('jessie', (279, 89)),
+        ('leon', (155, 317)), ('nita', (373, 91)))
+
+    changes = pipe.process(None, state)
+
+    assert changes == {}
+
+
 def test_should_noop_on_no_match(monkeypatch):
     stream_config = StreamConfig(resolution=480,
                                  max_fps=0,

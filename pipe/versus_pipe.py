@@ -38,7 +38,11 @@ class VersusPipe(Pipe):
         red_team = [Brawler(match[0]) for match in matches
                      if match[1][1] < average_y]
 
-        return {
-            "red_team": red_team,
-            "blue_team": blue_team
-        }
+        changes = {}
+
+        if len(blue_team) == 3:
+            changes["blue_team"] = blue_team
+        if len(red_team) in [1, 3]: # 3v3 or 3v1 robots
+            changes["red_team"] = red_team
+
+        return changes
