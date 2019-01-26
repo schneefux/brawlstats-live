@@ -32,7 +32,7 @@ if args.url is None:
             twitch.get_game_id("Brawl Stars")))
 
 stream_config = StreamConfig(
-    resolution=config.stream_resolution,
+    resolution=480,
     max_fps=config.max_fps,
     url=args.url)
 
