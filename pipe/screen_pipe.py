@@ -32,7 +32,7 @@ class ScreenPipe(Pipe):
             screen = matches[0][0]
             changes = {}
             if screen == Screen.QUEUE:
-                changes["last_queue"] = state.timestamp
+                changes["last_queue"] = state.seconds
 
             if screen != state.screen:
                 changes["screen"] = screen

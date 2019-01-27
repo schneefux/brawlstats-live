@@ -28,7 +28,7 @@ def test_should_change_screen_on_no_match():
 def test_should_set_last_queue():
     state = GameState(stream_config=stream_config,
                       screen=None,
-                      timestamp=1234)
+                      seconds=1234)
     pipe = ScreenPipe()
 
     pipe._matcher.classify = lambda *_: [(Screen.QUEUE, 1.0)]

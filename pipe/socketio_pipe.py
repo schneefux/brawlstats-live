@@ -45,10 +45,10 @@ class SocketioPipe(Pipe):
     def process(self, frame, state):
         if state.last_change is not None and \
             state.last_queue is not None and \
-            state.timestamp - state.last_queue < 300 and \
-            state.timestamp - state.last_change > 0.2: # s
+            state.seconds - state.last_queue < 300 and \
+            state.seconds - state.last_change > 0.2: # s
             self._message_queue.put({
-                "timestamp": state.timestamp,
+                "seconds": state.seconds,
                 "ingame": state.screen == Screen.GEMGRAB_INGAME,
                 "screen": state.screen.name if state.screen else None,
                 "blue_team": [b.name for b in state.blue_team],

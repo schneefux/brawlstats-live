@@ -83,7 +83,7 @@ class StreamWatcher(object):
         changes_len += len([k for k in changes.keys() if k != "stream_config"])
 
         if changes_len > 0:
-            new_state = evolve(new_state, last_change=new_state.timestamp)
+            new_state = evolve(new_state, last_change=new_state.seconds)
 
         self.state = new_state
         return frame.copy(), self.state
