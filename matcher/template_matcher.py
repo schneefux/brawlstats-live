@@ -30,11 +30,13 @@ class TemplateMatcher(Matcher):
                             path_glob)
 
         for path in paths:
+            path_dir = os.path.dirname(path)
             path_no_ext = os.path.splitext(path)[0]
             name = os.path.basename(path_no_ext)
 
             bounding_box = ((0, 0), (1.0, 1.0))
-            for json_path in ("default.json", path_no_ext + ".json"):
+            for json_path in (path_dir + "/default.json",
+                              path_no_ext + ".json"):
                 if os.path.isfile(json_path):
                     with open(json_path, "r") as json_file:
                         box = json.load(json_file)
