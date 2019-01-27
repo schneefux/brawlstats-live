@@ -32,29 +32,29 @@ class GembarMatcher(Matcher):
         active_pixels = np.count_nonzero(active_mask)
 
         total_pixels = active_pixels + inactive_pixels
-        return active_pixels / total_pixels if total_pixels / frame.size >= 0.03 else None
+        return active_pixels / total_pixels if total_pixels / frame.size >= 0.05 else None
 
 
 class BlueGembarMatcher(GembarMatcher):
     # hsv: h between 0 and 180
     active_range = (
-        np.array([90, 160, 220], dtype=np.uint8),
-        np.array([120, 255, 255], dtype=np.uint8),
+        np.array([80, 160, 210], dtype=np.uint8),
+        np.array([110, 255, 255], dtype=np.uint8),
     )
     inactive_range = (
-        np.array([90, 230, 140], dtype=np.uint8),
-        np.array([120, 255, 170], dtype=np.uint8),
+        np.array([90, 210, 140], dtype=np.uint8),
+        np.array([120, 255, 180], dtype=np.uint8),
     )
     is_left = True
         
         
 class RedGembarMatcher(GembarMatcher):
     active_range = (
-        np.array([170, 180, 200], dtype=np.uint8),
+        np.array([170, 180, 180], dtype=np.uint8),
         np.array([180, 255, 255], dtype=np.uint8),
     )
     inactive_range = (
-        np.array([170, 210, 90], dtype=np.uint8),
+        np.array([170, 210, 80], dtype=np.uint8),
         np.array([180, 255, 110], dtype=np.uint8),
     )
     is_left = False

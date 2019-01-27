@@ -52,8 +52,12 @@ def test_no_gembar():
     assert BlueGembarMatcher().classify(*image("loading_1")) == None
 
 
-def test_ignore_gembar_flash():
-    assert BlueGembarMatcher().classify(*image("ingame_13")) == None
-    assert BlueGembarMatcher().classify(*image("ingame_15")) == None
-    assert BlueGembarMatcher().classify(*image("ingame_17")) == None
-    assert BlueGembarMatcher().classify(*image("ingame_18")) == None
+@pytest.mark.parametrize("name", [
+    "ingame_13",
+    "ingame_15",
+    "ingame_17",
+    "ingame_18",
+    "ingame_19",
+])
+def test_ignore_gembar_flash(name):
+    assert BlueGembarMatcher().classify(*image(name)) == None
