@@ -25,7 +25,7 @@ class VersusPipe(Pipe):
                 "red_team": []
             }
 
-        if state.screen not in [Screen.GEMGRAB_VERSUS] or \
+        if state.screen not in [Screen.VERSUS] or \
                 state.stream_config.screen_box is None or \
                 len(state.blue_team) + len(state.red_team) > 0:
             return {}

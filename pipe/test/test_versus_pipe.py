@@ -36,7 +36,7 @@ def test_should_place_into_teams(data, teams):
                                  max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.GEMGRAB_VERSUS)
+                      screen=Screen.VERSUS)
     pipe = VersusPipe()
     pipe.start()
     pipe._matcher.classify = lambda *_: data
@@ -52,7 +52,7 @@ def test_should_noop_on_too_few_brawlers():
                                  max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.GEMGRAB_VERSUS)
+                      screen=Screen.VERSUS)
     pipe = VersusPipe()
     pipe.start()
     pipe._matcher.classify = lambda *_: (
@@ -69,7 +69,7 @@ def test_should_noop_on_no_match(monkeypatch):
                                  max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.GEMGRAB_VERSUS)
+                      screen=Screen.VERSUS)
     pipe = VersusPipe()
     pipe.start()
     monkeypatch.setattr(cv2, "imwrite", lambda *_: None)
@@ -104,7 +104,7 @@ def test_should_noop_on_existing_team():
                                  max_fps=0,
                                  screen_box=((10, 10), (842, 470)))
     state = GameState(stream_config=stream_config,
-                      screen=Screen.GEMGRAB_VERSUS,
+                      screen=Screen.VERSUS,
                       blue_team=[Brawler.RICOCHET, Brawler.NITA, Brawler.LEON],
                       red_team=[Brawler.RICOCHET, Brawler.BO, Brawler.BROCK])
     pipe = VersusPipe()

@@ -7,7 +7,7 @@ from keras.backend import image_data_format
 
 from config import shape, feature_map
 
-SAMPLES = 3600
+SAMPLES = 5000
 VALIDATION_RATIO = 0.2
 N_SCREENS = 26
 IMAGE_SHAPE = shape
