@@ -30,9 +30,11 @@ class ScreenPipe(Pipe):
 
         if len(matches) > 0:
             screen = matches[0][0]
+            changes = {}
+            if screen == Screen.QUEUE:
+                changes["last_queue"] = state.timestamp
+
             if screen != state.screen:
-                return {
-                    "screen": screen
-                }
-            else:
-                return {}
+                changes["screen"] = screen
+
+            return changes

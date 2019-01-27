@@ -7,6 +7,7 @@ class GameState(object):
     stream_config = attrib(type=StreamConfig)
     timestamp = attrib(type=int, default=None)
     last_change = attrib(type=int, default=None)
+    last_queue = attrib(type=int, default=None)
     seconds = attrib(type=float, default=0.0)
     screen = attrib(type=Screen, default=None)
     blue_team = attrib(type=list, default=[])
