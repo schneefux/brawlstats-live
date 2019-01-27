@@ -7,7 +7,6 @@ class GembarMatcher(Matcher):
     # hsv values with h between 0 and 180
     active_range = None
     inactive_range = None
-    highlight_range = None
     is_left = None
 
     def classify(self, frame, stream_config):
@@ -32,10 +31,6 @@ class GembarMatcher(Matcher):
                                   self.active_range[1])
         active_pixels = np.count_nonzero(active_mask)
 
-        highlight_mask = cv2.inRange(hsv, self.highlight_range[0],
-                                    self.highlight_range[1])
-        active_pixels += np.count_nonzero(highlight_mask)
-
         total_pixels = active_pixels + inactive_pixels
         return active_pixels / total_pixels if total_pixels / frame.size >= 0.03 else None
 
@@ -43,16 +38,12 @@ class GembarMatcher(Matcher):
 class BlueGembarMatcher(GembarMatcher):
     # hsv: h between 0 and 180
     active_range = (
-        np.array([90, 220, 220], dtype=np.uint8),
+        np.array([90, 160, 220], dtype=np.uint8),
         np.array([120, 255, 255], dtype=np.uint8),
     )
     inactive_range = (
         np.array([90, 230, 140], dtype=np.uint8),
         np.array([120, 255, 170], dtype=np.uint8),
-    )
-    highlight_range = (
-        np.array([90, 140, 230], dtype=np.uint8),
-        np.array([120, 200, 255], dtype=np.uint8),
     )
     is_left = True
         
@@ -65,10 +56,5 @@ class RedGembarMatcher(GembarMatcher):
     inactive_range = (
         np.array([170, 210, 90], dtype=np.uint8),
         np.array([180, 255, 110], dtype=np.uint8),
-    )
-    highlight_range = (
-        # unused
-        np.array([170, 255, 255], dtype=np.uint8),
-        np.array([180, 255, 255], dtype=np.uint8),
     )
     is_left = False

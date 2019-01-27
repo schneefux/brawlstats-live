@@ -56,3 +56,4 @@ def test_ignore_gembar_flash():
     assert BlueGembarMatcher().classify(*image("ingame_13")) == None
     assert BlueGembarMatcher().classify(*image("ingame_15")) == None
     assert BlueGembarMatcher().classify(*image("ingame_17")) == None
+    assert BlueGembarMatcher().classify(*image("ingame_18")) == None
