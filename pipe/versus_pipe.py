@@ -18,8 +18,16 @@ class VersusPipe(Pipe):
                                      1920, 1080)
 
     def process(self, frame, state):
+        if state.screen == Screen.PLAY_AGAIN and \
+            len(state.blue_team) + len(state.red_team) > 0:
+            return {
+                "blue_team": [],
+                "red_team": []
+            }
+
         if state.screen not in [Screen.GEMGRAB_VERSUS] or \
-                state.stream_config.screen_box is None:
+                state.stream_config.screen_box is None or \
+                len(state.blue_team) + len(state.red_team) > 0:
             return {}
 
         matches = self._matcher.classify(frame,

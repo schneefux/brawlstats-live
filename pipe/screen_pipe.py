@@ -23,10 +23,10 @@ class ScreenPipe(Pipe):
             return {}
 
         matches = self._matcher.classify(frame, state.stream_config)
+        changes = {}
+
         if len(matches) == 0:
-            return {
-                "screen": None
-            }
+            changes["screen"] = None
 
         if len(matches) > 0:
             screen = matches[0][0]
@@ -37,4 +37,4 @@ class ScreenPipe(Pipe):
             if screen != state.screen:
                 changes["screen"] = screen
 
-            return changes
+        return changes

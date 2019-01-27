@@ -78,3 +78,38 @@ def test_should_noop_on_no_match(monkeypatch):
     changes = pipe.process(None, state)
 
     assert changes == {}
+
+
+def test_should_reset_on_play_again():
+    stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
+                                 screen_box=((10, 10), (842, 470)))
+    state = GameState(stream_config=stream_config,
+                      screen=Screen.PLAY_AGAIN,
+                      blue_team=[Brawler.RICOCHET, Brawler.NITA, Brawler.LEON],
+                      red_team=[Brawler.RICOCHET, Brawler.BO, Brawler.BROCK])
+    pipe = VersusPipe()
+    pipe.start()
+
+    changes = pipe.process(None, state)
+
+    assert changes == {
+        "blue_team": [],
+        "red_team": []
+    }
+
+
+def test_should_noop_on_existing_team():
+    stream_config = StreamConfig(resolution=480,
+                                 max_fps=0,
+                                 screen_box=((10, 10), (842, 470)))
+    state = GameState(stream_config=stream_config,
+                      screen=Screen.GEMGRAB_VERSUS,
+                      blue_team=[Brawler.RICOCHET, Brawler.NITA, Brawler.LEON],
+                      red_team=[Brawler.RICOCHET, Brawler.BO, Brawler.BROCK])
+    pipe = VersusPipe()
+    pipe.start()
+
+    changes = pipe.process(None, state)
+
+    assert changes == {}
